@@ -11,6 +11,8 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import quaternary.cascade2.block.CascadeBlock;
 import quaternary.cascade2.block.ModBlocks;
+import quaternary.cascade2.item.ModItems;
+import quaternary.cascade2.misc.CascadeCreativeTab;
 import quaternary.cascade2.proxy.CommonProxy;
 
 @Mod(modid = Cascade.MODID, name = Cascade.NAME, version = Cascade.VERSION)
@@ -26,6 +28,8 @@ public class Cascade {
 	            serverSide = "quaternary.cascade2.proxy.CommonProxy")
 	public static CommonProxy PROXY;
 	
+	public static final CascadeCreativeTab CREATIVE_TAB = new CascadeCreativeTab();
+	
 	@Mod.EventBusSubscriber
 	public static class RegistrationEvents {	
 		@SubscribeEvent
@@ -36,11 +40,13 @@ public class Cascade {
 		@SubscribeEvent
 		public static void items(RegistryEvent.Register<Item> e) {
 			ModBlocks.registerItemBlocks(e.getRegistry());
+			ModItems.registerItems(e.getRegistry());
 		}
 				
 		@SubscribeEvent
 		public static void itemModels(ModelRegistryEvent e) {
 			ModBlocks.registerItemBlockModels();
+			ModItems.registerItemModels();
 		}
 	}
 }

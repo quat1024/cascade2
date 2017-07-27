@@ -1,2 +1,5 @@
 #Aura Nodes
 tile.node_white.name=White Aura Node
+
+#Creative Tab
+itemGroup.cascade2=Cascade
