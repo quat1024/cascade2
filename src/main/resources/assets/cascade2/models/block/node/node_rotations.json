@@ -1,0 +1,21 @@
+{
+  "parent": "minecraft:block/block",
+  "comment": "Aura nodes are a lot smaller than regular blocks, making them REALLY small in inventories. This model makes them a lot larger.",
+  "display": {
+    "gui": {
+      "rotation": [ 30, 225, 0 ],
+      "translation": [ 0, 0, 0],
+      "scale": [ 0.9, 0.9, 0.9]
+    },
+    "firstperson_righthand": {
+      "rotation": [ 0, 45, 0 ],
+      "translation": [ 0, 0, 0 ],
+      "scale": [ 0.6, 0.6, 0.6]
+    },
+    "firstperson_lefthand": {
+      "rotation": [ 0, 225, 0 ],
+      "translation": [ 0, 0, 0 ],
+      "scale": [ 0.6, 0.6, 0.6]
+    }
+  }
+}

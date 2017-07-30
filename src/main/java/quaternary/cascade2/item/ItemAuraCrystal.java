@@ -3,6 +3,7 @@ package quaternary.cascade2.item;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
+import quaternary.cascade2.Cascade;
 
 public class ItemAuraCrystal extends CascadeItem {
 	//TODO move this to aura system class
@@ -22,8 +23,6 @@ public class ItemAuraCrystal extends CascadeItem {
 		return super.getUnlocalizedName() + "." + stack.getMetadata();
 	}
 	
-	//This method name sucks.
-	//It's used to add sub items to a creative tab. It's not a getter.
 	//TODO: add functionality for this in ModItems, maybe.
 	@Override
 	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> stacks) {

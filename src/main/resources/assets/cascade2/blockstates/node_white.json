@@ -9,6 +9,7 @@
     "model": "cascade2:node/node_smol_cube"
   },
   "variants": {
-    "normal": [{}]
+    "normal": [{}],
+    "inventory": [{}]
   }
 }

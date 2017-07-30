@@ -26,7 +26,7 @@ public class ModBlocks {
 	
 	public static void registerItemBlockModels() {
 		for(CascadeBlock b: blocks) {
-			Cascade.PROXY.registerItemModel(b.getItemBlock(), 0);
+			b.registerItemBlockModel();
 		}
 	}
 }

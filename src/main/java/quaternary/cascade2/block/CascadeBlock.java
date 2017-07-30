@@ -18,10 +18,11 @@ public class CascadeBlock extends Block {
 		setRegistryName(name);
 		setUnlocalizedName(name);
 		
+		setCreativeTab(Cascade.CREATIVE_TAB);
+		
 		itemForm = new ItemBlock(this);
 		itemForm.setRegistryName(name); //TODO should I append _item?
 		itemForm.setUnlocalizedName(name);
-		itemForm.setCreativeTab(Cascade.CREATIVE_TAB);
 	}
 	
 	public ItemBlock getItemBlock() {
