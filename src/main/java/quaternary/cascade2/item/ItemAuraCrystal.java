@@ -32,4 +32,12 @@ public class ItemAuraCrystal extends CascadeItem {
 			}
 		}
 	}
+	
+	@Override
+	public void registerSubtypeModels() {
+		for(int i=0; i < MAX_AURA_COLORS; i++) {
+			//todo: actual aura names go in registry
+			Cascade.PROXY.registerItemModelWithSuffix(this, i, "type" + i);
+		}
+	}
 }

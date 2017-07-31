@@ -19,7 +19,11 @@ public class ModItems {
 		//todo: handle data values properly instead of just assuming there aren't any
 		//for example aura crystal items should DEFFO have a dv
 		for(CascadeItem i: items) {
-			Cascade.PROXY.registerItemModel(i, 0);
+			if(i.getHasSubtypes()) {
+				i.registerSubtypeModels();
+			} else {
+				Cascade.PROXY.registerItemModel(i);
+			}
 		}
 	}
 }

@@ -30,6 +30,7 @@ public class CascadeBlock extends Block {
 	}
 	
 	public void registerItemBlockModel() {
-		Cascade.PROXY.registerItemModel(itemForm, 0);
+		//todo: handle data values
+		Cascade.PROXY.registerItemModel(itemForm);
 	}
 }

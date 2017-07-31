@@ -14,4 +14,9 @@ public class CascadeItem extends Item {
 		setUnlocalizedName(name);
 		setCreativeTab(Cascade.CREATIVE_TAB);
 	}
+	
+	//Called in ModItems, override iff using subtypes
+	public void registerSubtypeModels() {
+		
+	}
 }
