@@ -18,8 +18,7 @@ public class ItemAuraCrystal extends CascadeItem {
 	
 	@Override
 	public String getUnlocalizedName(ItemStack stack) {
-		//TODO when aura colors are introduced, use their *name* for localization
-		//instead of this number index boringness
+		//TODO actual aura names
 		return super.getUnlocalizedName() + "." + stack.getMetadata();
 	}
 	
@@ -36,7 +35,7 @@ public class ItemAuraCrystal extends CascadeItem {
 	@Override
 	public void registerSubtypeModels() {
 		for(int i=0; i < MAX_AURA_COLORS; i++) {
-			//todo: actual aura names go in registry
+			//todo: actual aura names
 			Cascade.PROXY.registerItemModelWithSuffix(this, i, "type" + i);
 		}
 	}

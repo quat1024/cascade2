@@ -14,6 +14,6 @@ public class ClientProxy extends CommonProxy {
 	@Override
 	public void registerItemModelWithSuffix(Item i, int dv, String name) {
 		ModelLoader.setCustomModelResourceLocation(i, dv,
-						new ModelResourceLocation(i.getRegistryName() + "." + name, "inventory"));
+						new ModelResourceLocation(i.getRegistryName() + "_" + name, "inventory"));
 	}
 }
