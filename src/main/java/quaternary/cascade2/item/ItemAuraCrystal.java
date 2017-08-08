@@ -6,7 +6,7 @@ import net.minecraft.util.NonNullList;
 import quaternary.cascade2.Cascade;
 
 public class ItemAuraCrystal extends CascadeItem {
-	//TODO move this to aura system class
+	//TODO move this int to aura system class
 	public static final int MAX_AURA_COLORS = 8;
 	
 	public ItemAuraCrystal() {

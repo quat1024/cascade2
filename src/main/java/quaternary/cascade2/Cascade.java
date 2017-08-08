@@ -9,6 +9,8 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import quaternary.cascade2.block.CascadeBlock;
 import quaternary.cascade2.block.ModBlocks;
 import quaternary.cascade2.item.ModItems;
@@ -29,6 +31,8 @@ public class Cascade {
 	public static CommonProxy PROXY;
 	
 	public static final CascadeCreativeTab CREATIVE_TAB = new CascadeCreativeTab();
+	
+	public static final Logger LOGGER = LogManager.getLogger(MODID);
 	
 	@Mod.EventBusSubscriber
 	public static class RegistrationEvents {	

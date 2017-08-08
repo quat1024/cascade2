@@ -21,7 +21,7 @@ public class CascadeBlock extends Block {
 		setCreativeTab(Cascade.CREATIVE_TAB);
 		
 		itemForm = new ItemBlock(this);
-		itemForm.setRegistryName(name); //TODO should I append _item?
+		itemForm.setRegistryName(name);
 		itemForm.setUnlocalizedName(name);
 	}
 	

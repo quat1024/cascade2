@@ -2,20 +2,26 @@ package quaternary.cascade2.block;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
 import quaternary.cascade2.Cascade;
 import quaternary.cascade2.block.node.BlockAuraNode;
+import quaternary.cascade2.block.node.BlockAuraNodeNormal;
 
 public class ModBlocks {
-	//hey hey because of the new objectholder thing
-	//i don't have to keep easily-accessible public
-	//instances for all my blocks. nnnnnnice.
 	public static final CascadeBlock[] blocks = {
-					new BlockAuraNode("node_white")
+					new BlockAuraNodeNormal()
 	};
 	
 	public static void registerBlocks(IForgeRegistry<Block> reg) {
-		reg.registerAll(blocks);
+		for(CascadeBlock b: blocks) {
+			reg.register(b);
+			
+			if(b instanceof CascadeBlockTileEntity) {
+				CascadeBlockTileEntity bt = (CascadeBlockTileEntity) b;
+				GameRegistry.registerTileEntity(bt.getTileEntityClass(), bt.getRegistryName().toString());
+			}
+		}
 	}
 	
 	public static void registerItemBlocks(IForgeRegistry<Item> reg) {
