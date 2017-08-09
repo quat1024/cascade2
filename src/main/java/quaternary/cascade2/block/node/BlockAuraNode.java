@@ -3,7 +3,9 @@ package quaternary.cascade2.block.node;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -36,9 +38,15 @@ public abstract class BlockAuraNode extends CascadeBlockTileEntity<TileEntityAur
 	}
 	
 	//messages to tile entity
+	
+	@Override
+	public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+		getCastedTileEntity(worldIn, pos).onPlaceBlock();
+	}
+	
 	@Override
 	public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-		getCastedTileEntity(worldIn,pos).onBreakBlock();
+		getCastedTileEntity(worldIn, pos).onBreakBlock();
 		super.breakBlock(worldIn, pos, state);
 	}
 	

@@ -8,6 +8,7 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,6 +34,12 @@ public class Cascade {
 	public static final CascadeCreativeTab CREATIVE_TAB = new CascadeCreativeTab();
 	
 	public static final Logger LOGGER = LogManager.getLogger(MODID);
+	
+	@Mod.EventHandler
+	public void preinit(FMLPreInitializationEvent e) {
+		LOGGER.info("PREINIT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+		PROXY.registerTESRs();
+	}
 	
 	@Mod.EventBusSubscriber
 	public static class RegistrationEvents {	
