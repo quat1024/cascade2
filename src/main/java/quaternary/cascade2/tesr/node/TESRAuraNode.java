@@ -16,6 +16,8 @@ import java.util.Map;
 
 //todo: fasttesr
 public class TESRAuraNode extends TileEntitySpecialRenderer<TileEntityAuraNode> {
+	public static final ResourceLocation BEAM_FX_LOC = new ResourceLocation("cascade2:textures/etc/node_connector.png");
+	
 	@Override
 	public final void render(TileEntityAuraNode te, double x, double y, double z, float partialTicks, int destroyStage, float partial) {
 		BlockPos myPos = te.getPos();
@@ -25,18 +27,17 @@ public class TESRAuraNode extends TileEntitySpecialRenderer<TileEntityAuraNode> 
 		GlStateManager.pushMatrix();
 		GlStateManager.translate(0.5 + x,0.5 + y,0.5 + z);
 		
-		Minecraft.getMinecraft().renderEngine.bindTexture(new ResourceLocation("minecraft:textures/blocks/stone.png"));
-		
 		GlStateManager.glLineWidth(3f);
+		
+		Minecraft.getMinecraft().getTextureManager().bindTexture(BEAM_FX_LOC);
 		
 		for(Map.Entry<EnumFacing,BlockPos> pair : te.getConnectionMap().entrySet()) {
 			//I don't want to render connections 2 times from 2 nodes
 			if(pair.getKey().getAxisDirection() == EnumFacing.AxisDirection.POSITIVE) {
 				BlockPos otherPos = pair.getValue();
 				
-				buffer.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
-				buffer.pos(0,0,0).color(255,0,255,255).endVertex();
-				buffer.pos(otherPos.getX()-myPos.getX(),otherPos.getY()-myPos.getY(),otherPos.getZ()-myPos.getZ()).color(255,0,255,255).endVertex();
+				//TODO: fancy render
+				
 				tes.draw();
 			}
 		}
