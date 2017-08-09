@@ -16,6 +16,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import quaternary.cascade2.Cascade;
+import quaternary.cascade2.aura.AuraContainer;
+import quaternary.cascade2.aura.type.AuraType;
+import quaternary.cascade2.aura.type.crystal.IAuraCrystal;
 import quaternary.cascade2.net.util.CascadePacketUtils;
 import quaternary.cascade2.tile.CascadeTileEntity;
 import quaternary.cascade2.util.CascadeUtils;
@@ -29,15 +32,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 	
 	//global setting stuff
-	private static final int MAX_AURA = 1000;
 	private static final int CONNECTION_RANGE = 16;
 	private static final AxisAlignedBB ITEM_DETECTION_AABB = new AxisAlignedBB(0,0,0,1,1,1);
 	
-	@GameRegistry.ObjectHolder("cascade2:aura_crystal")
-	public static final Item AURA_CRYSTAL_ITEM = null;
-	
 	//per-node prop stuff
-	public int aura = 0;
+	public AuraContainer auraContainer = new AuraContainer(1000);
 	public boolean connectable = true;
 	//ticks until another aura crystal can be accepted
 	public byte auraCooldown = 0;
@@ -68,16 +67,24 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 			
 			if(auraCooldown == 0) {
 				List<EntityItem> nearbyItems = world.getEntitiesWithinAABB(EntityItem.class, ITEM_DETECTION_AABB.offset(this.pos));
-				nearbyItems.removeIf(item -> item.getItem().isEmpty() || !item.getItem().isItemEqual(new ItemStack(AURA_CRYSTAL_ITEM)));
+				//FIXME: this is like, super awkward, like look at that double getitem x d
+				//FIXME: Capabilities instead of instanceof checks
+				//"But muh oneliner"
+				nearbyItems.removeIf(item -> item.getItem().isEmpty() || !(item.getItem().getItem() instanceof IAuraCrystal));
+				
 				if(!nearbyItems.isEmpty()) {
 					for(EntityItem ent : nearbyItems) {
-						ItemStack stack = ent.getItem();
-						if(MAX_AURA - aura > 50) { //Todo: aura types
-							aura += 50;       //Todo: make this per-crystal, not a hardcoded 50
+						ItemStack stack = ent.getItem/*Stack*/();
+						IAuraCrystal crystalItem = (IAuraCrystal) stack.getItem();
+						
+						AuraType type = crystalItem.getAuraType(stack);
+						int auraToAdd = crystalItem.getAuraContained(stack); 
+						
+						if(auraContainer.canAddAuraAmount(auraToAdd)) {
+							auraContainer.addAuraOfType(type, auraToAdd);
 							auraCooldown = 20;
 							stack.shrink(1);
-							Cascade.LOGGER.info("New size: " + stack.getCount());
-							break;
+							break; //only look at one stack at a time (2 stacks shouldn't consume twice as much)
 						}
 					}
 				}
@@ -228,8 +235,7 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 	//nbt stuff
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
-		//todo: aura types
-		nbt.setInteger(AURA_KEY, aura);
+		nbt.setTag(AURA_KEY, auraContainer.writeToNBTList());
 		nbt.setBoolean(CONNECTABLE_KEY, connectable);
 		nbt.setByte(AURA_COOLDOWN_KEY, auraCooldown);
 		NBTTagList connectionsList = new NBTTagList();
@@ -251,8 +257,7 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 	
 	@Override
 	public void readFromNBT(NBTTagCompound nbt) {
-		//todo: aura types
-		aura = nbt.getInteger(AURA_KEY);
+		auraContainer.readFromNBTList(nbt.getTagList(AURA_KEY, 10));
 		connectable = nbt.getBoolean(CONNECTABLE_KEY);
 		auraCooldown = nbt.getByte(AURA_COOLDOWN_KEY);
 		

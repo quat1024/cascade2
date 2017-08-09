@@ -14,6 +14,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import quaternary.cascade2.aura.type.CascadeAuraTypes;
 import quaternary.cascade2.block.CascadeBlock;
 import quaternary.cascade2.block.ModBlocks;
 import quaternary.cascade2.item.ModItems;
@@ -43,8 +44,11 @@ public class Cascade {
 	public void preinit(FMLPreInitializationEvent e) {
 		PROXY.registerTESRs();
 		
+		//todo: Dummy
 		netwrapper = NetworkRegistry.INSTANCE.newSimpleChannel(MODID);
 		ModPackets.registerPackets(netwrapper);
+		
+		CascadeAuraTypes.registerAuraTypes();
 	}
 	
 	@Mod.EventBusSubscriber

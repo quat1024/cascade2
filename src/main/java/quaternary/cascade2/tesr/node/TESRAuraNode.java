@@ -36,7 +36,7 @@ public class TESRAuraNode extends TileEntitySpecialRenderer<TileEntityAuraNode> 
 				
 				buffer.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
 				buffer.pos(0,0,0).color(255,0,255,255).endVertex();
-				buffer.pos(otherPos.getX()-myPos.getX(),otherPos.getY()-myPos.getY(),otherPos.getZ()-myPos.getZ()).color(0,255,255,255).endVertex();
+				buffer.pos(otherPos.getX()-myPos.getX(),otherPos.getY()-myPos.getY(),otherPos.getZ()-myPos.getZ()).color(255,0,255,255).endVertex();
 				tes.draw();
 			}
 		}

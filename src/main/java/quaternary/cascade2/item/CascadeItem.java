@@ -2,6 +2,7 @@ package quaternary.cascade2.item;
 
 import net.minecraft.item.Item;
 import quaternary.cascade2.Cascade;
+import quaternary.cascade2.aura.type.crystal.IAuraCrystal;
 
 public class CascadeItem extends Item {
 	
