@@ -1,63 +1,98 @@
 package quaternary.cascade2.tile.node;
 
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.SoundEvents;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
-import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import quaternary.cascade2.Cascade;
-import quaternary.cascade2.net.client.CPacketRequestUpdateAuraNodeConnections;
-import quaternary.cascade2.net.server.SPacketUpdateAuraNodeConnections;
+import quaternary.cascade2.net.util.CascadePacketUtils;
 import quaternary.cascade2.tile.CascadeTileEntity;
 import quaternary.cascade2.util.CascadeUtils;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+//This class is fkin huge but things will get split off eventually, don't worry
 
 public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 	
 	//global setting stuff
+	private static final int MAX_AURA = 1000;
 	private static final int CONNECTION_RANGE = 16;
+	private static final AxisAlignedBB ITEM_DETECTION_AABB = new AxisAlignedBB(0,0,0,1,1,1);
+	
+	@GameRegistry.ObjectHolder("cascade2:aura_crystal")
+	public static final Item AURA_CRYSTAL_ITEM = null;
 	
 	//per-node prop stuff
-	public long aura = 0L;
+	public int aura = 0;
 	public boolean connectable = true;
+	//ticks until another aura crystal can be accepted
+	public byte auraCooldown = 0;
 	
 	//node nbt stuff
-	private static final String AURA_KEY = "aura";
-	private static final String CONNECTABLE_KEY = "connectable";
-	private static final String CONNECTIONS_LIST_KEY = "connections_list";
-	private static final String FACING_KEY = "facing";
+	private static final String AURA_KEY = "Aura";
+	private static final String AURA_COOLDOWN_KEY = "AuraCooldown";
+	private static final String CONNECTABLE_KEY = "Connectable";
+	private static final String CONNECTIONS_LIST_KEY = "ConnectionList";
+	private static final String FACING_KEY = "Facing";
 	
 	//connection storage stuff
 	private ConcurrentHashMap<EnumFacing, BlockPos> connectedTEMap = new ConcurrentHashMap<>();
 	
+	//packet stuff
+	//todo: am I doing this right? I'm basically stealing what botania does shh
+	private boolean shouldDispatchPacket;
+	
 	//ticky tock stuff
 	public void update() {
-		
+		if(!world.isRemote) {
+			if(shouldDispatchPacket) {
+				shouldDispatchPacket = false;
+				CascadePacketUtils.dispatchTEToNearby(this);
+			}
+			
+			if(auraCooldown > 0) auraCooldown--;
+			
+			if(auraCooldown == 0) {
+				List<EntityItem> nearbyItems = world.getEntitiesWithinAABB(EntityItem.class, ITEM_DETECTION_AABB.offset(this.pos));
+				nearbyItems.removeIf(item -> item.getItem().isEmpty() || !item.getItem().isItemEqual(new ItemStack(AURA_CRYSTAL_ITEM)));
+				if(!nearbyItems.isEmpty()) {
+					for(EntityItem ent : nearbyItems) {
+						ItemStack stack = ent.getItem();
+						if(MAX_AURA - aura > 50) { //Todo: aura types
+							aura += 50;       //Todo: make this per-crystal, not a hardcoded 50
+							auraCooldown = 20;
+							stack.shrink(1);
+							Cascade.LOGGER.info("New size: " + stack.getCount());
+							break;
+						}
+					}
+				}
+			}
+		}
 	}
 	
 	@Override
 	public void onLoad() {
-		if(world.isRemote) {
-			Cascade.netwrapper.sendToServer(new CPacketRequestUpdateAuraNodeConnections(this));
-		} else {
-			Cascade.netwrapper.sendToAllAround(new SPacketUpdateAuraNodeConnections(this),
-							new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
-		}
+		if(!world.isRemote) this.resetAllConnections();
 	}
 	
 	//Temp!!!!!!!!
-	public void onActivated(World www, EntityPlayer player) {		
-		if(player.isSneaking()) {
+	public void onActivated(World www, EntityPlayer player) {
+		/*if(player.isSneaking()) {
 			Cascade.LOGGER.info("Rechecking all connections from scratch:");
 			resetAllConnections();
 		} else {
@@ -69,7 +104,7 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 		
 		for(Map.Entry<EnumFacing,BlockPos> pair : connectedTEMap.entrySet()) {
 			Cascade.LOGGER.info("Side: " + pair.getKey() + " Pos: " + pair.getValue());
-		}
+		}*/
 	}
 	
 	//connection managing
@@ -98,9 +133,6 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 				}
 			}
 		}
-		
-		Cascade.netwrapper.sendToAllAround(new SPacketUpdateAuraNodeConnections(this), 
-						new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
 	}
 	
 	private void removeInvalidConnections() {
@@ -117,7 +149,6 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 			//And, I don't want to remove a connection, just because it is unloaded.
 			//Otherwise stuff across chunk borders would just fall apart super fast.
 			if(other != null && world.getTileEntity(otherPos) == null) {
-				Cascade.LOGGER.info("Removing dead connection on my " + whichSide.getName() + " side");
 				this.removeConnection(pair.getKey());
 				continue;
 			}
@@ -129,15 +160,11 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 				if(!world.isBlockLoaded(posToCheck)) continue;
 				
 				if(!canConnectionPassThrough(world.getBlockState(posToCheck))) {
-					Cascade.LOGGER.info("Removing connection to my " + whichSide.getName().toLowerCase() + " side because it is obstructed");
 					this.removeConnection(whichSide);
 					break;
 				}
 			}
 		}
-		
-			Cascade.netwrapper.sendToAllAround(new SPacketUpdateAuraNodeConnections(this),
-							new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
 		
 		//todo: Do I need to verify anything else about the connections?
 	}
@@ -157,12 +184,19 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 		resetAllConnections();
 	}
 	
+	//helper functions for managing connections
 	private void removeConnection(EnumFacing side) {
-		connectedTEMap.remove(side);
+		if(connectedTEMap.get(side) != null) {
+			connectedTEMap.remove(side);
+			shouldDispatchPacket = true;			
+		}
 	}
 	
 	private void setConnection(EnumFacing side, BlockPos otherPos) {
-		connectedTEMap.put(side, otherPos);
+		if((connectedTEMap.get(side) == null && otherPos != null) || !connectedTEMap.get(side).equals(otherPos)) {
+			connectedTEMap.put(side, otherPos);
+			shouldDispatchPacket = true;
+		}
 	}
 	
 	private BlockPos getConnection(EnumFacing side) {
@@ -170,7 +204,10 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 	}
 	
 	private void clearConnections() {
-		connectedTEMap.clear();
+		if(!connectedTEMap.isEmpty()) {
+			connectedTEMap.clear();
+			shouldDispatchPacket = true;
+		}
 	}
 	
 	public ConcurrentHashMap<EnumFacing, BlockPos> getConnectionMap() {
@@ -180,6 +217,7 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 	public void replaceConnectionMap(ConcurrentHashMap<EnumFacing, BlockPos> newMap) {
 		clearConnections();
 		connectedTEMap.putAll(newMap);
+		shouldDispatchPacket = true;
 	}
 	
 	private boolean canConnectionPassThrough(IBlockState state) {
@@ -191,9 +229,9 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
 		//todo: aura types
-		nbt.setLong(AURA_KEY, aura);
+		nbt.setInteger(AURA_KEY, aura);
 		nbt.setBoolean(CONNECTABLE_KEY, connectable);
-		
+		nbt.setByte(AURA_COOLDOWN_KEY, auraCooldown);
 		NBTTagList connectionsList = new NBTTagList();
 		for(Map.Entry<EnumFacing,BlockPos> pair : connectedTEMap.entrySet()) {
 			EnumFacing whichWay = pair.getKey();
@@ -214,13 +252,9 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 	@Override
 	public void readFromNBT(NBTTagCompound nbt) {
 		//todo: aura types
-		aura = nbt.getLong(AURA_KEY);
+		aura = nbt.getInteger(AURA_KEY);
 		connectable = nbt.getBoolean(CONNECTABLE_KEY);
-		
-		//This is JUST FOR DEBUGGING
-		//I don't need to set my own pos this early
-		pos = CascadeUtils.blockPosFromNBTCompound(nbt);
-		Cascade.LOGGER.info("Hello, I am " + pos.toString());
+		auraCooldown = nbt.getByte(AURA_COOLDOWN_KEY);
 		
 		connectedTEMap.clear();
 		NBTTagList connectionsList = nbt.getTagList(CONNECTIONS_LIST_KEY, 10);
@@ -232,7 +266,6 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 							entry.getInteger("z"));
 			EnumFacing whichWay = EnumFacing.values()[entry.getInteger(FACING_KEY)];
 			
-			Cascade.LOGGER.info("Loading " + whichWay.getName() + " facing connection to " + connectPos.toString());
 			setConnection(whichWay, connectPos);
 		}
 		super.readFromNBT(nbt);
