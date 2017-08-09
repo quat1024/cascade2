@@ -12,7 +12,10 @@ import net.minecraft.util.ITickable;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 import quaternary.cascade2.Cascade;
+import quaternary.cascade2.net.client.CPacketRequestUpdateAuraNodeConnections;
+import quaternary.cascade2.net.server.SPacketUpdateAuraNodeConnections;
 import quaternary.cascade2.tile.CascadeTileEntity;
 import quaternary.cascade2.util.CascadeUtils;
 
@@ -44,12 +47,16 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 	
 	@Override
 	public void onLoad() {
+		if(world.isRemote) {
+			Cascade.netwrapper.sendToServer(new CPacketRequestUpdateAuraNodeConnections(this));
+		} else {
+			Cascade.netwrapper.sendToAllAround(new SPacketUpdateAuraNodeConnections(this),
+							new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
+		}
 	}
 	
 	//Temp!!!!!!!!
-	public void onActivated(World www, EntityPlayer player) {
-		if(world.isRemote) return;
-		
+	public void onActivated(World www, EntityPlayer player) {		
 		if(player.isSneaking()) {
 			Cascade.LOGGER.info("Rechecking all connections from scratch:");
 			resetAllConnections();
@@ -67,6 +74,8 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 	
 	//connection managing
 	private void resetAllConnections() {
+		if(world.isRemote) return;
+		
 		clearConnections();
 		
 		for(int sideIndex = 0; sideIndex < EnumFacing.values().length; sideIndex++) {
@@ -78,7 +87,7 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 				//Can't connect through solid blocks.
 				if(!canConnectionPassThrough(world.getBlockState(otherPos))) break;
 				
-				TileEntity checkedTE = world.getTileEntity(otherPos); //not using my getloadedtileentity b/c already checked up there
+				TileEntity checkedTE = world.getTileEntity(otherPos); //not using my getloadedtileentity b/c already checked loadedness up there
 				if(checkedTE instanceof TileEntityAuraNode) {
 					TileEntityAuraNode otherTE = (TileEntityAuraNode) checkedTE;
 					if(otherTE.connectable) {
@@ -89,9 +98,14 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 				}
 			}
 		}
+		
+		Cascade.netwrapper.sendToAllAround(new SPacketUpdateAuraNodeConnections(this), 
+						new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
 	}
 	
-	private void removeInvalidConnections() {		
+	private void removeInvalidConnections() {
+		if(world.isRemote) return;
+		
 		for(Map.Entry<EnumFacing,BlockPos> pair : connectedTEMap.entrySet()) {
 			EnumFacing whichSide = pair.getKey();
 			BlockPos otherPos = pair.getValue();
@@ -121,6 +135,9 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 				}
 			}
 		}
+		
+			Cascade.netwrapper.sendToAllAround(new SPacketUpdateAuraNodeConnections(this),
+							new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
 		
 		//todo: Do I need to verify anything else about the connections?
 	}
@@ -156,8 +173,13 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 		connectedTEMap.clear();
 	}
 	
-	public ConcurrentHashMap<EnumFacing, BlockPos> getConnections() {
+	public ConcurrentHashMap<EnumFacing, BlockPos> getConnectionMap() {
 		return connectedTEMap;
+	}
+	
+	public void replaceConnectionMap(ConcurrentHashMap<EnumFacing, BlockPos> newMap) {
+		clearConnections();
+		connectedTEMap.putAll(newMap);
 	}
 	
 	private boolean canConnectionPassThrough(IBlockState state) {

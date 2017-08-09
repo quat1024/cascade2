@@ -10,12 +10,15 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import quaternary.cascade2.block.CascadeBlock;
 import quaternary.cascade2.block.ModBlocks;
 import quaternary.cascade2.item.ModItems;
 import quaternary.cascade2.misc.CascadeCreativeTab;
+import quaternary.cascade2.net.ModPackets;
 import quaternary.cascade2.proxy.CommonProxy;
 
 @Mod(modid = Cascade.MODID, name = Cascade.NAME, version = Cascade.VERSION)
@@ -32,13 +35,16 @@ public class Cascade {
 	public static CommonProxy PROXY;
 	
 	public static final CascadeCreativeTab CREATIVE_TAB = new CascadeCreativeTab();
-	
 	public static final Logger LOGGER = LogManager.getLogger(MODID);
+	
+	public static SimpleNetworkWrapper netwrapper;
 	
 	@Mod.EventHandler
 	public void preinit(FMLPreInitializationEvent e) {
-		LOGGER.info("PREINIT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 		PROXY.registerTESRs();
+		
+		netwrapper = NetworkRegistry.INSTANCE.newSimpleChannel(MODID);
+		ModPackets.registerPackets(netwrapper);
 	}
 	
 	@Mod.EventBusSubscriber

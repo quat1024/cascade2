@@ -6,16 +6,15 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.renderer.vertex.VertexBuffer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import org.lwjgl.opengl.GL11;
-import quaternary.cascade2.Cascade;
 import quaternary.cascade2.tile.node.TileEntityAuraNode;
 
 import java.util.Map;
 
+//todo: fasttesr
 public class TESRAuraNode extends TileEntitySpecialRenderer<TileEntityAuraNode> {
 	@Override
 	public final void render(TileEntityAuraNode te, double x, double y, double z, float partialTicks, int destroyStage, float partial) {
@@ -30,7 +29,7 @@ public class TESRAuraNode extends TileEntitySpecialRenderer<TileEntityAuraNode> 
 		
 		GlStateManager.glLineWidth(3f);
 		
-		for(Map.Entry<EnumFacing,BlockPos> pair : te.getConnections().entrySet()) {
+		for(Map.Entry<EnumFacing,BlockPos> pair : te.getConnectionMap().entrySet()) {
 			//I don't want to render connections 2 times from 2 nodes
 			if(pair.getKey().getAxisDirection() == EnumFacing.AxisDirection.POSITIVE) {
 				BlockPos otherPos = pair.getValue();

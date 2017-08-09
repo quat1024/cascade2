@@ -8,7 +8,7 @@ import net.minecraft.tileentity.TileEntity;
 public abstract class CascadeTileEntity extends TileEntity {
 	//TODO: Am I doing this shit right????!?!?!??!?
 	
-	@Override
+	/*@Override
 	public final NBTTagCompound getUpdateTag() {
 		return this.writeToNBT(new NBTTagCompound());
 	}
@@ -21,5 +21,5 @@ public abstract class CascadeTileEntity extends TileEntity {
 	@Override
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
 		this.readFromNBT(packet.getNbtCompound());
-	}
+	}*/
 }
