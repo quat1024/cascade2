@@ -11,7 +11,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import org.lwjgl.opengl.GL11;
 import quaternary.cascade2.tile.node.TileEntityAuraNode;
-import quaternary.cascade2.util.CascadeUtilEvents;
 
 import java.util.Map;
 
@@ -41,6 +40,8 @@ public class TESRAuraNode extends TileEntitySpecialRenderer<TileEntityAuraNode> 
 			if(whichWay.getAxisDirection() == EnumFacing.AxisDirection.POSITIVE) {
 				BlockPos otherPos = pair.getValue();
 				
+				GlStateManager.pushMatrix();
+				
 				int distance;
 				if(whichWay == EnumFacing.EAST) { //positive X
 					distance = otherPos.getX() - myPos.getX();
@@ -54,6 +55,8 @@ public class TESRAuraNode extends TileEntitySpecialRenderer<TileEntityAuraNode> 
 				
 				buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR_NORMAL);
 				box(buffer, distance);
+				
+				GlStateManager.popMatrix();
 				
 				tes.draw();
 			}

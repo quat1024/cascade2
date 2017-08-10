@@ -15,6 +15,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import quaternary.cascade2.Cascade;
 import quaternary.cascade2.aura.AuraContainer;
 import quaternary.cascade2.aura.type.AuraType;
@@ -59,8 +61,8 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 	public void update() {
 		if(!world.isRemote) {
 			if(shouldDispatchPacket) {
-				shouldDispatchPacket = false;
 				CascadePacketUtils.dispatchTEToNearby(this);
+				shouldDispatchPacket = false;
 			}
 			
 			if(auraCooldown > 0) auraCooldown--;
@@ -112,6 +114,25 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 		for(Map.Entry<EnumFacing,BlockPos> pair : connectedTEMap.entrySet()) {
 			Cascade.LOGGER.info("Side: " + pair.getKey() + " Pos: " + pair.getValue());
 		}*/
+	}
+	
+	//rendering stuff
+	@Override
+	@SideOnly(Side.CLIENT)
+	public AxisAlignedBB getRenderBoundingBox() {
+		/*if(dirtyRenderbox) {
+			int lengthX = CascadeUtils.blockPosDistance(pos,connectedTEMap.getOrDefault(EnumFacing.EAST, pos));
+			int lengthY = CascadeUtils.blockPosDistance(pos,connectedTEMap.getOrDefault(EnumFacing.UP, pos));
+			int lengthZ = CascadeUtils.blockPosDistance(pos,connectedTEMap.getOrDefault(EnumFacing.SOUTH, pos));
+			renderAABB = new AxisAlignedBB(0,0,0,1+lengthX, 1+lengthY, 1+lengthZ);
+			renderAABB.offset(pos);
+			dirtyRenderbox = false;
+		}		
+		return renderAABB;*/
+		return super.getRenderBoundingBox();
+		//AxisAlignedBB aabb = new AxisAlignedBB(0, 0, 0, CONNECTION_RANGE, CONNECTION_RANGE, CONNECTION_RANGE);
+		//aabb.offset(pos);
+		//return aabb;
 	}
 	
 	//connection managing

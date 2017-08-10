@@ -53,6 +53,7 @@ public class Cascade {
 		
 		CascadeAuraTypes.registerAuraTypes();
 		
+		//todo: Useless
 		MinecraftForge.EVENT_BUS.register(CascadeUtilEvents.class);
 	}
 	
