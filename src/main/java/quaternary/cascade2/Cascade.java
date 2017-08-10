@@ -5,6 +5,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -21,6 +22,8 @@ import quaternary.cascade2.item.ModItems;
 import quaternary.cascade2.misc.CascadeCreativeTab;
 import quaternary.cascade2.net.ModPackets;
 import quaternary.cascade2.proxy.CommonProxy;
+import quaternary.cascade2.util.CascadeUtilEvents;
+import quaternary.cascade2.util.CascadeUtils;
 
 @Mod(modid = Cascade.MODID, name = Cascade.NAME, version = Cascade.VERSION)
 public class Cascade {
@@ -49,6 +52,8 @@ public class Cascade {
 		ModPackets.registerPackets(netwrapper);
 		
 		CascadeAuraTypes.registerAuraTypes();
+		
+		MinecraftForge.EVENT_BUS.register(CascadeUtilEvents.class);
 	}
 	
 	@Mod.EventBusSubscriber
