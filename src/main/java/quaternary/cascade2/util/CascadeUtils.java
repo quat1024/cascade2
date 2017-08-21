@@ -26,10 +26,6 @@ public class CascadeUtils {
 		return new BlockPos(array[0], array[1], array[2]);
 	}
 	
-	public static BlockPos blockPosFromNBTCompound(NBTTagCompound nbt) {
-		return new BlockPos(nbt.getInteger("x"), nbt.getInteger("y"), nbt.getInteger("z"));
-	}
-	
 	public static TileEntity getLoadedTileEntity(World world, BlockPos pos) {
 		if(world.isBlockLoaded(pos)) return world.getTileEntity(pos);
 		else return null;

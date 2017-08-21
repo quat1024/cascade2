@@ -11,6 +11,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import org.lwjgl.opengl.GL11;
 import quaternary.cascade2.tile.node.TileEntityAuraNode;
+import quaternary.cascade2.util.CascadeRenderUtils;
 
 import java.util.Map;
 
@@ -28,73 +29,70 @@ public class TESRAuraNode extends TileEntitySpecialRenderer<TileEntityAuraNode> 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(BEAM_FX_LOC);
 		
 		GlStateManager.pushMatrix();
-		GlStateManager.translate(0.5 + x,0.5 + y,0.5 + z);
+		GlStateManager.translate(x, y, z);
 		GlStateManager.enableBlend();
 		
 		//TODO revisit this
 		//float kindaRandomOffset = (myPos.getX()*36.3f + myPos.getY()*163.7f + myPos.getZ()*12.9f)%360f;
+		
+		buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR_NORMAL);
 		
 		for(Map.Entry<EnumFacing,BlockPos> pair : te.getConnectionMap().entrySet()) {
 			EnumFacing whichWay = pair.getKey();
 			//I don't want to render connections 2 times from 2 nodes
 			if(whichWay.getAxisDirection() == EnumFacing.AxisDirection.POSITIVE) {
 				BlockPos otherPos = pair.getValue();
-				
-				GlStateManager.pushMatrix();
-				
-				int distance;
-				if(whichWay == EnumFacing.EAST) { //positive X
-					distance = otherPos.getX() - myPos.getX();
-				} else if (whichWay == EnumFacing.UP) { //positive Y
-					distance = otherPos.getY() - myPos.getY();
-					GlStateManager.rotate(90f, 0f, 0f, 1f);
-				} else { //positive Z
-					distance = otherPos.getZ() - myPos.getZ();
-					GlStateManager.rotate(90f, 0f, -1f, 0f);
-				}
-				
-				buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR_NORMAL);
-				box(buffer, distance);
-				
-				GlStateManager.popMatrix();
-				
-				tes.draw();
+				float x2 = otherPos.getX() - myPos.getX() + .5f + THICC;
+				float y2 = otherPos.getY() - myPos.getY() + .5f + THICC;
+				float z2 = otherPos.getZ() - myPos.getZ() + .5f + THICC;
+				box2(buffer,.5f-THICC, .5f-THICC, .5f-THICC, x2, y2, z2);
 			}
 		}
+		
+		tes.draw();
 		
 		GlStateManager.disableBlend();
 		GlStateManager.popMatrix();
 	}
 	
-	private static final float THICC = 0.13f; //radius
+	private static final float THICC = 0.125f; //radius
 	
-	private void box(BufferBuilder b, int len) {
-		//FIXME: Quit repeating yourself you buffoon, and make this method less crappy
-		//FIXME: uvs are fucked still (it's like, a rectangle, whatt?????)
+	private void box2(BufferBuilder b, double x1, double y1, double z1, double x2, double y2, double z2) {		
+		//Top (positive Y)
+		CascadeRenderUtils.point(b, x1, y2, z1, 0, 0, EnumFacing.UP);
+		CascadeRenderUtils.point(b, x1, y2, z2, 0, 1, EnumFacing.UP);
+		CascadeRenderUtils.point(b, x2, y2, z2, 1, 1, EnumFacing.UP);
+		CascadeRenderUtils.point(b, x2, y2, z1, 1, 0, EnumFacing.UP);
 		
-		//Top
-		b.pos(0, THICC, THICC)    .tex(0, 0).color(255, 255, 255, 255).normal(0, 1, 0).endVertex();
-		b.pos(len, THICC, THICC)  .tex(len*2, 0).color(255, 255, 255, 255).normal(0, 1, 0).endVertex();
-		b.pos(len, THICC, -THICC) .tex(len*2, 1).color(255, 255, 255, 255).normal(0, 1, 0).endVertex();
-		b.pos(0, THICC, -THICC)   .tex(0, 1).color(255, 255, 255, 255).normal(0, 1, 0).endVertex();
+		//North (negative Z)
+		CascadeRenderUtils.point(b, x1, y1, z1, 0, 0, EnumFacing.NORTH);
+		CascadeRenderUtils.point(b, x1, y2, z1, 0, 1, EnumFacing.NORTH);
+		CascadeRenderUtils.point(b, x2, y2, z1, 1, 1, EnumFacing.NORTH);
+		CascadeRenderUtils.point(b, x2, y1, z1, 1, 0, EnumFacing.NORTH);
 		
-		//Bottom (drawn the other way)
-		b.pos(0, -THICC, -THICC)  .tex(0, 1).color(255, 255, 255, 255).normal(0, -1, 0).endVertex();
-		b.pos(len, -THICC, -THICC).tex(len*2, 1).color(255, 255, 255, 255).normal(0, -1, 0).endVertex();
-		b.pos(len, -THICC, THICC) .tex(len*2, 0).color(255, 255, 255, 255).normal(0, -1, 0).endVertex();
-		b.pos(0, -THICC, THICC)   .tex(0, 0).color(255, 255, 255, 255).normal(0, -1, 0).endVertex();
+		//East (positive X)
+		CascadeRenderUtils.point(b, x2, y1, z1, 0, 0, EnumFacing.EAST);
+		CascadeRenderUtils.point(b, x2, y2, z1, 1, 0, EnumFacing.EAST);
+		CascadeRenderUtils.point(b, x2, y2, z2, 1, 1, EnumFacing.EAST);
+		CascadeRenderUtils.point(b, x2, y1, z2, 0, 1, EnumFacing.EAST);
 		
-		//One side (drawn the other way)
-		b.pos(0, -THICC, THICC)   .tex(0, 1).color(255, 255, 255, 255).normal(0, 0, 1).endVertex();
-		b.pos(len, -THICC, THICC) .tex(len*2, 1).color(255, 255, 255, 255).normal(0, 0, 1).endVertex();
-		b.pos(len, THICC, THICC)  .tex(len*2, 0).color(255, 255, 255, 255).normal(0, 0, 1).endVertex();
-		b.pos(0, THICC, THICC)    .tex(0, 0).color(255, 255, 255, 255).normal(0, 0, 1).endVertex();
+		//South (positive Z)
+		CascadeRenderUtils.point(b, x1, y1, z2, 0, 0, EnumFacing.SOUTH);
+		CascadeRenderUtils.point(b, x2, y1, z2, 1, 0, EnumFacing.SOUTH);
+		CascadeRenderUtils.point(b, x2, y2, z2, 1, 1, EnumFacing.SOUTH);
+		CascadeRenderUtils.point(b, x1, y2, z2, 0, 1, EnumFacing.SOUTH);
 		
-		//The other
-		b.pos(0, THICC, -THICC)   .tex(0, 0).color(255, 255, 255, 255).normal(0, 0, -1).endVertex();
-		b.pos(len, THICC, -THICC) .tex(len*2, 0).color(255, 255, 255, 255).normal(0, 0, -1).endVertex();
-		b.pos(len, -THICC, -THICC).tex(len*2, 1).color(255, 255, 255, 255).normal(0, 0, -1).endVertex();
-		b.pos(0, -THICC, -THICC)  .tex(0, 1).color(255, 255, 255, 255).normal(0, 0, -1).endVertex();
+		//West (negative X)
+		CascadeRenderUtils.point(b, x1, y1, z1, 0, 0, EnumFacing.WEST);
+		CascadeRenderUtils.point(b, x1, y1, z2, 0, 1, EnumFacing.WEST);
+		CascadeRenderUtils.point(b, x1, y2, z2, 1, 1, EnumFacing.WEST);
+		CascadeRenderUtils.point(b, x1, y2, z1, 1, 0, EnumFacing.WEST);
+		
+		//Down (negative Y)
+		CascadeRenderUtils.point(b, x1, y1, z1, 0, 0, EnumFacing.DOWN);
+		CascadeRenderUtils.point(b, x2, y1, z1, 1, 0, EnumFacing.DOWN);
+		CascadeRenderUtils.point(b, x2, y1, z2, 1, 1, EnumFacing.DOWN);
+		CascadeRenderUtils.point(b, x1, y1, z2, 0, 1, EnumFacing.DOWN);
 	}
 	
 	public boolean isGlobalRenderer(TileEntityAuraNode bla) {

@@ -25,6 +25,7 @@ import quaternary.cascade2.net.util.CascadePacketUtils;
 import quaternary.cascade2.tile.CascadeTileEntity;
 import quaternary.cascade2.util.CascadeUtils;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -57,6 +58,12 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 	//todo: am I doing this right? I'm basically stealing what botania does shh
 	private boolean shouldDispatchPacket;
 	
+	//render aabb stuff
+	@SideOnly(Side.CLIENT)
+	private boolean dirtyAABB;
+	@SideOnly(Side.CLIENT)
+	private AxisAlignedBB renderAABB;
+	
 	//ticky tock stuff
 	public void update() {
 		if(!world.isRemote) {
@@ -69,10 +76,9 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 			
 			if(auraCooldown == 0) {
 				List<EntityItem> nearbyItems = world.getEntitiesWithinAABB(EntityItem.class, ITEM_DETECTION_AABB.offset(this.pos));
-				//FIXME: this is like, super awkward, like look at that double getitem x d
+				
 				//FIXME: Capabilities instead of instanceof checks
-				//"But muh oneliner"
-				nearbyItems.removeIf(item -> item.getItem().isEmpty() || !(item.getItem().getItem() instanceof IAuraCrystal));
+				nearbyItems.removeIf(itemEntity -> itemEntity.getItem/*Stack*/().isEmpty() || !(itemEntity.getItem/*Stack*/().getItem() instanceof IAuraCrystal));
 				
 				if(!nearbyItems.isEmpty()) {
 					for(EntityItem ent : nearbyItems) {
@@ -86,7 +92,7 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 							auraContainer.addAuraOfType(type, auraToAdd);
 							auraCooldown = 20;
 							stack.shrink(1);
-							break; //only look at one stack at a time (2 stacks shouldn't consume twice as much)
+							break; //only eat one stack at a time
 						}
 					}
 				}
@@ -120,19 +126,19 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public AxisAlignedBB getRenderBoundingBox() {
-		/*if(dirtyRenderbox) {
-			int lengthX = CascadeUtils.blockPosDistance(pos,connectedTEMap.getOrDefault(EnumFacing.EAST, pos));
-			int lengthY = CascadeUtils.blockPosDistance(pos,connectedTEMap.getOrDefault(EnumFacing.UP, pos));
-			int lengthZ = CascadeUtils.blockPosDistance(pos,connectedTEMap.getOrDefault(EnumFacing.SOUTH, pos));
-			renderAABB = new AxisAlignedBB(0,0,0,1+lengthX, 1+lengthY, 1+lengthZ);
-			renderAABB.offset(pos);
-			dirtyRenderbox = false;
-		}		
-		return renderAABB;*/
-		return super.getRenderBoundingBox();
-		//AxisAlignedBB aabb = new AxisAlignedBB(0, 0, 0, CONNECTION_RANGE, CONNECTION_RANGE, CONNECTION_RANGE);
-		//aabb.offset(pos);
-		//return aabb;
+		if(renderAABB == null) renderAABB = new AxisAlignedBB(pos);
+		if(dirtyAABB) recalculateRenderBoundingBox();
+		return renderAABB;
+	}
+	
+	private void recalculateRenderBoundingBox() {
+		int lengthX = hasConnection(EnumFacing.EAST)  ? getDistanceToConnection(EnumFacing.EAST)  : 0;
+		int lengthY = hasConnection(EnumFacing.UP)    ? getDistanceToConnection(EnumFacing.UP)    : 0;
+		int lengthZ = hasConnection(EnumFacing.SOUTH) ? getDistanceToConnection(EnumFacing.SOUTH) : 0;
+		
+		renderAABB = new AxisAlignedBB(pos.getX(),          pos.getY(),          pos.getZ(),
+		                               pos.getX()+lengthX+1,pos.getY()+lengthY+1,pos.getZ()+lengthZ+1);
+		dirtyAABB = false;
 	}
 	
 	//connection managing
@@ -147,10 +153,11 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 				BlockPos otherPos = pos.offset(whichSide,dist);
 				if(!world.isBlockLoaded(otherPos)) continue;
 				
-				//Can't connect through solid blocks.
+				//stop looking if this connection will be blocked.
 				if(!canConnectionPassThrough(world.getBlockState(otherPos))) break;
 				
-				TileEntity checkedTE = world.getTileEntity(otherPos); //not using my getloadedtileentity b/c already checked loadedness up there
+				//FIXME: caps
+				TileEntity checkedTE = world.getTileEntity(otherPos);
 				if(checkedTE instanceof TileEntityAuraNode) {
 					TileEntityAuraNode otherTE = (TileEntityAuraNode) checkedTE;
 					if(otherTE.connectable) {
@@ -163,26 +170,25 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 		}
 	}
 	
+	//FIXME: This method sucks ass.
 	private void removeInvalidConnections() {
 		if(world.isRemote) return;
 		
 		for(Map.Entry<EnumFacing,BlockPos> pair : connectedTEMap.entrySet()) {
 			EnumFacing whichSide = pair.getKey();
 			BlockPos otherPos = pair.getValue();
-			TileEntityAuraNode other = (TileEntityAuraNode) CascadeUtils.getLoadedTileEntity(world, otherPos);
 			
-			//Intentionally NOT checking for loadedness first
-			//because this removes the mapping from the hashmap.
-			//I will only ever check an unloaded chunk once.
-			//And, I don't want to remove a connection, just because it is unloaded.
-			//Otherwise stuff across chunk borders would just fall apart super fast.
-			if(other != null && world.getTileEntity(otherPos) == null) {
-				this.removeConnection(pair.getKey());
-				continue;
+			if(!world.isBlockLoaded(otherPos)) continue;
+			
+			//Check to make sure the connection blockpos isn't a "dangling pointer".
+			TileEntityAuraNode other = (TileEntityAuraNode) world.getTileEntity(otherPos);
+			if(other == null) {
+				this.removeConnection(whichSide);
 			}
 			
-			//Is the connection to this node unobstructed?
-			int distToOther = CascadeUtils.blockPosDistance(pos, otherPos);
+			//Check to make sure the connection is not obstructed.
+			//todo: dry (I check this on placement too)
+			int distToOther = getDistanceToConnection(whichSide);
 			for(int dist = 1; dist < distToOther; dist++) {
 				BlockPos posToCheck = pos.offset(whichSide, dist);
 				if(!world.isBlockLoaded(posToCheck)) continue;
@@ -193,8 +199,6 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 				}
 			}
 		}
-		
-		//todo: Do I need to verify anything else about the connections?
 	}
 	
 	//block interactions
@@ -214,20 +218,29 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 	
 	//helper functions for managing connections
 	private void removeConnection(EnumFacing side) {
-		if(connectedTEMap.get(side) != null) {
+		if(hasConnection(side)) {
 			connectedTEMap.remove(side);
 			shouldDispatchPacket = true;			
 		}
 	}
 	
 	private void setConnection(EnumFacing side, BlockPos otherPos) {
-		if((connectedTEMap.get(side) == null && otherPos != null) || !connectedTEMap.get(side).equals(otherPos)) {
+		if(otherPos == null) return;
+		
+		//If I'm not connected there, or, if I am connected but the position is different
+		if(!hasConnection(side) || !getConnection(side).equals(otherPos)) {
 			connectedTEMap.put(side, otherPos);
 			shouldDispatchPacket = true;
 		}
 	}
 	
+	public boolean hasConnection(EnumFacing side) {
+		return connectedTEMap.containsKey(side);
+	}
+	
+	@Nullable
 	private BlockPos getConnection(EnumFacing side) {
+		if(!hasConnection(side)) return null;
 		return connectedTEMap.get(side);
 	}
 	
@@ -236,6 +249,12 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 			connectedTEMap.clear();
 			shouldDispatchPacket = true;
 		}
+	}
+	
+	public int getDistanceToConnection(EnumFacing side) {
+		if(!hasConnection(side)) throw new IllegalArgumentException("Tried to get distance to nonexistent side " + side.getName());
+		
+		return CascadeUtils.blockPosDistance(pos, getConnection(side));
 	}
 	
 	public ConcurrentHashMap<EnumFacing, BlockPos> getConnectionMap() {
@@ -295,5 +314,7 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 			setConnection(whichWay, connectPos);
 		}
 		super.readFromNBT(nbt);
+		
+		if(world.isRemote) dirtyAABB = true;
 	}
 }
