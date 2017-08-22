@@ -37,7 +37,7 @@ public class TESRAuraNode extends TileEntitySpecialRenderer<TileEntityAuraNode> 
 		
 		buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR_NORMAL);
 		
-		for(Map.Entry<EnumFacing,BlockPos> pair : te.getConnectionMap().entrySet()) {
+		for(Map.Entry<EnumFacing, BlockPos> pair : te.getConnectionMap().entrySet()) {
 			EnumFacing whichWay = pair.getKey();
 			//I don't want to render connections 2 times from 2 nodes
 			if(whichWay.getAxisDirection() == EnumFacing.AxisDirection.POSITIVE) {
@@ -45,7 +45,7 @@ public class TESRAuraNode extends TileEntitySpecialRenderer<TileEntityAuraNode> 
 				float x2 = otherPos.getX() - myPos.getX() + .5f + THICC;
 				float y2 = otherPos.getY() - myPos.getY() + .5f + THICC;
 				float z2 = otherPos.getZ() - myPos.getZ() + .5f + THICC;
-				box2(buffer,.5f-THICC, .5f-THICC, .5f-THICC, x2, y2, z2);
+				box2(buffer, .5f - THICC, .5f - THICC, .5f - THICC, x2, y2, z2);
 			}
 		}
 		
@@ -57,7 +57,7 @@ public class TESRAuraNode extends TileEntitySpecialRenderer<TileEntityAuraNode> 
 	
 	private static final float THICC = 0.125f; //radius
 	
-	private void box2(BufferBuilder b, double x1, double y1, double z1, double x2, double y2, double z2) {		
+	private void box2(BufferBuilder b, double x1, double y1, double z1, double x2, double y2, double z2) {
 		//Top (positive Y)
 		CascadeRenderUtils.point(b, x1, y2, z1, 0, 0, EnumFacing.UP);
 		CascadeRenderUtils.point(b, x1, y2, z2, 0, 1, EnumFacing.UP);

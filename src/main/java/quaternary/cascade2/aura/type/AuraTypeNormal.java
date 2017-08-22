@@ -6,5 +6,7 @@ public class AuraTypeNormal extends AuraType {
 	}
 	
 	//FIXME: extensibility
-	public int getCrystalDamage() { return 0; }
+	public int getCrystalDamage() {
+		return 0;
+	}
 }

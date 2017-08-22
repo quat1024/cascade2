@@ -3,7 +3,6 @@ package quaternary.cascade2.tile.node;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -14,10 +13,8 @@ import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import quaternary.cascade2.Cascade;
 import quaternary.cascade2.aura.AuraContainer;
 import quaternary.cascade2.aura.type.AuraType;
 import quaternary.cascade2.aura.type.crystal.IAuraCrystal;
@@ -36,7 +33,7 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 	
 	//global setting stuff
 	private static final int CONNECTION_RANGE = 16;
-	private static final AxisAlignedBB ITEM_DETECTION_AABB = new AxisAlignedBB(0,0,0,1,1,1);
+	private static final AxisAlignedBB ITEM_DETECTION_AABB = new AxisAlignedBB(0, 0, 0, 1, 1, 1);
 	
 	//per-node prop stuff
 	public AuraContainer auraContainer = new AuraContainer(1000);
@@ -86,7 +83,7 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 						IAuraCrystal crystalItem = (IAuraCrystal) stack.getItem();
 						
 						AuraType type = crystalItem.getAuraType(stack);
-						int auraToAdd = crystalItem.getAuraContained(stack); 
+						int auraToAdd = crystalItem.getAuraContained(stack);
 						
 						if(auraContainer.canAddAuraAmount(auraToAdd)) {
 							auraContainer.addAuraOfType(type, auraToAdd);
@@ -132,12 +129,12 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 	}
 	
 	private void recalculateRenderBoundingBox() {
-		int lengthX = hasConnection(EnumFacing.EAST)  ? getDistanceToConnection(EnumFacing.EAST)  : 0;
-		int lengthY = hasConnection(EnumFacing.UP)    ? getDistanceToConnection(EnumFacing.UP)    : 0;
+		int lengthX = hasConnection(EnumFacing.EAST) ? getDistanceToConnection(EnumFacing.EAST) : 0;
+		int lengthY = hasConnection(EnumFacing.UP) ? getDistanceToConnection(EnumFacing.UP) : 0;
 		int lengthZ = hasConnection(EnumFacing.SOUTH) ? getDistanceToConnection(EnumFacing.SOUTH) : 0;
 		
-		renderAABB = new AxisAlignedBB(pos.getX(),          pos.getY(),          pos.getZ(),
-		                               pos.getX()+lengthX+1,pos.getY()+lengthY+1,pos.getZ()+lengthZ+1);
+		renderAABB = new AxisAlignedBB(pos.getX(), pos.getY(), pos.getZ(),
+						pos.getX() + lengthX + 1, pos.getY() + lengthY + 1, pos.getZ() + lengthZ + 1);
 		dirtyAABB = false;
 	}
 	
@@ -150,7 +147,7 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 		for(int sideIndex = 0; sideIndex < EnumFacing.values().length; sideIndex++) {
 			EnumFacing whichSide = EnumFacing.values()[sideIndex];
 			for(int dist = 1; dist < CONNECTION_RANGE; dist++) {
-				BlockPos otherPos = pos.offset(whichSide,dist);
+				BlockPos otherPos = pos.offset(whichSide, dist);
 				if(!world.isBlockLoaded(otherPos)) continue;
 				
 				//stop looking if this connection will be blocked.
@@ -174,7 +171,7 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 	private void removeInvalidConnections() {
 		if(world.isRemote) return;
 		
-		for(Map.Entry<EnumFacing,BlockPos> pair : connectedTEMap.entrySet()) {
+		for(Map.Entry<EnumFacing, BlockPos> pair : connectedTEMap.entrySet()) {
 			EnumFacing whichSide = pair.getKey();
 			BlockPos otherPos = pair.getValue();
 			
@@ -205,7 +202,7 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 	public void onBreakBlock() {
 		this.connectable = false;
 		
-		for(Map.Entry<EnumFacing,BlockPos> pair : connectedTEMap.entrySet()) {
+		for(Map.Entry<EnumFacing, BlockPos> pair : connectedTEMap.entrySet()) {
 			TileEntityAuraNode other = (TileEntityAuraNode) CascadeUtils.getLoadedTileEntity(world, pair.getValue());
 			if(other == null) continue;
 			other.resetAllConnections();
@@ -220,7 +217,7 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 	private void removeConnection(EnumFacing side) {
 		if(hasConnection(side)) {
 			connectedTEMap.remove(side);
-			shouldDispatchPacket = true;			
+			shouldDispatchPacket = true;
 		}
 	}
 	
@@ -252,7 +249,8 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 	}
 	
 	public int getDistanceToConnection(EnumFacing side) {
-		if(!hasConnection(side)) throw new IllegalArgumentException("Tried to get distance to nonexistent side " + side.getName());
+		if(!hasConnection(side))
+			throw new IllegalArgumentException("Tried to get distance to nonexistent side " + side.getName());
 		
 		return CascadeUtils.blockPosDistance(pos, getConnection(side));
 	}
@@ -279,7 +277,7 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 		nbt.setBoolean(CONNECTABLE_KEY, connectable);
 		nbt.setByte(AURA_COOLDOWN_KEY, auraCooldown);
 		NBTTagList connectionsList = new NBTTagList();
-		for(Map.Entry<EnumFacing,BlockPos> pair : connectedTEMap.entrySet()) {
+		for(Map.Entry<EnumFacing, BlockPos> pair : connectedTEMap.entrySet()) {
 			EnumFacing whichWay = pair.getKey();
 			BlockPos whichPos = pair.getValue();
 			

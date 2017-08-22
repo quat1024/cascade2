@@ -2,8 +2,8 @@ package quaternary.cascade2.aura;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import quaternary.cascade2.aura.type.AuraTypeRegistry;
 import quaternary.cascade2.aura.type.AuraType;
+import quaternary.cascade2.aura.type.AuraTypeRegistry;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,7 +35,9 @@ public class AuraContainer {
 		return auraStorage.getOrDefault(type, 0);
 	}
 	
-	public int getMaxAura() { return maxTotal; }
+	public int getMaxAura() {
+		return maxTotal;
+	}
 	
 	public int getTotalAuraContained() {
 		//There's still no nice way to do this in Java :/
@@ -66,7 +68,7 @@ public class AuraContainer {
 	
 	public AuraContainer readFromNBTList(NBTTagList list) {
 		auraStorage = new ConcurrentHashMap<>();
-		for(int i=0; i < list.tagCount(); i++) {
+		for(int i = 0; i < list.tagCount(); i++) {
 			NBTTagCompound entry = list.getCompoundTagAt(i);
 			AuraType type = AuraTypeRegistry.fromString(entry.getString(TYPE_KEY));
 			int amount = entry.getInteger(AMOUNT_KEY);

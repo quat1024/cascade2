@@ -7,6 +7,6 @@ import net.minecraft.util.math.Vec3i;
 public class CascadeRenderUtils {
 	public static void point(BufferBuilder b, double x, double y, double z, float u, float v, EnumFacing way) {
 		Vec3i norm = way.getDirectionVec();
-		b.pos(x,y,z).tex(u,v).color(255,255,255,255).normal(norm.getX(),norm.getY(),norm.getZ()).endVertex();
+		b.pos(x, y, z).tex(u, v).color(255, 255, 255, 255).normal(norm.getX(), norm.getY(), norm.getZ()).endVertex();
 	}
 }

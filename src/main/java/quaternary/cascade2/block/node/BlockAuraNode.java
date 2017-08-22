@@ -17,8 +17,8 @@ import quaternary.cascade2.tile.node.TileEntityAuraNode;
 
 public abstract class BlockAuraNode extends CascadeBlockTileEntity<TileEntityAuraNode> {
 	static final AxisAlignedBB AABB = new AxisAlignedBB(
-					1/4d, 1/4d, 1/4d, 
-					3/4d, 3/4d, 3/4d);
+					1 / 4d, 1 / 4d, 1 / 4d,
+					3 / 4d, 3 / 4d, 3 / 4d);
 	
 	public BlockAuraNode(String jeff) {
 		super(jeff, Material.ROCK); //Todo: real material choice
@@ -78,7 +78,9 @@ public abstract class BlockAuraNode extends CascadeBlockTileEntity<TileEntityAur
 	}
 	
 	@Override
-	public boolean isPassable(IBlockAccess blah, BlockPos blahblah) { return false; }
+	public boolean isPassable(IBlockAccess blah, BlockPos blahblah) {
+		return false;
+	}
 	
 	@Override
 	public BlockFaceShape getBlockFaceShape(IBlockAccess world, IBlockState state, BlockPos pos, EnumFacing facing) {

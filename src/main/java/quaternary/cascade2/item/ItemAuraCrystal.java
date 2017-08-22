@@ -5,7 +5,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import quaternary.cascade2.Cascade;
 import quaternary.cascade2.aura.type.AuraType;
-import quaternary.cascade2.aura.type.AuraTypeNormal;
 import quaternary.cascade2.aura.type.AuraTypeRegistry;
 import quaternary.cascade2.aura.type.crystal.IAuraCrystal;
 
@@ -39,7 +38,7 @@ public class ItemAuraCrystal extends CascadeItem implements IAuraCrystal {
 	@Override
 	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> stacks) {
 		if(isInCreativeTab(tab)) {
-			for(int i=0; i < MAX_AURA_COLORS; i++) {
+			for(int i = 0; i < MAX_AURA_COLORS; i++) {
 				stacks.add(new ItemStack(this, 1, i));
 			}
 		}
@@ -47,7 +46,7 @@ public class ItemAuraCrystal extends CascadeItem implements IAuraCrystal {
 	
 	@Override
 	public void registerSubtypeModels() {
-		for(int i=0; i < MAX_AURA_COLORS; i++) {
+		for(int i = 0; i < MAX_AURA_COLORS; i++) {
 			//todo: actual aura names
 			Cascade.PROXY.registerItemModelWithSuffix(this, i, "type" + i);
 		}

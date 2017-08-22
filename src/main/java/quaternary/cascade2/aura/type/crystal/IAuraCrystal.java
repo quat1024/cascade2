@@ -6,7 +6,7 @@ import quaternary.cascade2.aura.type.AuraType;
 //An item implementing this can be eaten by an aura node.
 //TODO: caps
 public interface IAuraCrystal {
-	public AuraType getAuraType(ItemStack stack);
+	AuraType getAuraType(ItemStack stack);
 	
-	public int getAuraContained(ItemStack stack);
+	int getAuraContained(ItemStack stack);
 }
