@@ -1,8 +1,10 @@
 package quaternary.cascade2.tile.node;
+// Comment with space after the slashes to appease Nerxit.
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -12,6 +14,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -24,8 +27,6 @@ import quaternary.cascade2.tile.CascadeTileEntity;
 import quaternary.cascade2.util.CascadeUtils;
 
 import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -42,7 +43,7 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 	public AuraContainerNotCapabilityDoNotUseSeriously auraContainer = new AuraContainerNotCapabilityDoNotUseSeriously(1000);
 	public boolean connectable = true;
 	//ticks until another aura crystal can be accepted
-	public byte auraCooldown = 0;
+	public byte auraAbsorptionCooldown = 0;
 	
 	//node nbt stuff
 	private static final String AURA_KEY = "Aura";
@@ -52,7 +53,10 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 	private static final String FACING_KEY = "Facing";
 	
 	//connection storage stuff
-	private HashMap<EnumFacing, BlockPos> connectedTEMap = new HashMap<>();
+	/** Stores all connections from this aura container to other containers. */
+	private ConcurrentHashMap<EnumFacing, BlockPos> connectionMap = new ConcurrentHashMap<>();
+	/** Stores whether the connection is "active", i.e. unobstructed. */
+	private ConcurrentHashMap<EnumFacing, Boolean> activeMap = new ConcurrentHashMap<>();
 	
 	//packet stuff
 	//todo: am I doing this right? I'm basically stealing what botania does shh
@@ -64,17 +68,21 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 	@SideOnly(Side.CLIENT)
 	private AxisAlignedBB renderAABB;
 	
-	//ticky tock stuff
 	public void update() {
 		if(!world.isRemote) {
+			//FIXME: Don't use hacky bullshit.
 			if(shouldDispatchPacket) {
 				CascadePacketUtils.dispatchTEToNearby(this);
 				shouldDispatchPacket = false;
 			}
 			
-			if(auraCooldown > 0) auraCooldown--;
+			if(world.getWorldTime() % 20 == 0) {
+				updateConnections();
+			}
 			
-			if(auraCooldown == 0) {
+			if(auraAbsorptionCooldown > 0) auraAbsorptionCooldown--;
+			
+			if(auraAbsorptionCooldown == 0) {
 				List<EntityItem> nearbyItems = world.getEntitiesWithinAABB(EntityItem.class, ITEM_DETECTION_AABB.offset(this.pos));
 				
 				//FIXME: Capabilities instead of instanceof checks
@@ -90,7 +98,7 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 						
 						if(auraContainer.canAddAuraAmount(auraToAdd)) {
 							auraContainer.addAuraOfType(type, auraToAdd);
-							auraCooldown = 20;
+							auraAbsorptionCooldown = 20;
 							stack.shrink(1);
 							break; //only eat one stack at a time
 						}
@@ -122,8 +130,17 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 		Cascade.LOGGER.info("Printing connections:");
 		*/
 		if(!world.isRemote) return;
-		for(Map.Entry<EnumFacing,BlockPos> pair : connectedTEMap.entrySet()) {
-			Cascade.LOGGER.info("Side: " + pair.getKey() + " Pos: " + pair.getValue());
+		
+		player.sendMessage(new TextComponentString("My name Jeff!!!! xD"));
+		
+		for(Map.Entry<EnumFacing, BlockPos> pair : connectionMap.entrySet()) {
+			EnumFacing whichWay = pair.getKey();
+			BlockPos whatPos = pair.getValue();
+			//This SHOUDN'T cause any problems because the hashmaps SHOULD be parallel.
+			//It looks really fuckin scary though. Right? Tell me that doesn't look scary.
+			boolean active = activeMap.get(whichWay);
+			boolean active2 = isConnectionActive(whichWay);
+			player.sendMessage(new TextComponentString("Side: " + whichWay + " Pos: " + whatPos + " Active: " + active2));
 		}
 	}
 	
@@ -153,20 +170,22 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 		
 		for(int sideIndex = 0; sideIndex < EnumFacing.values().length; sideIndex++) {
 			EnumFacing whichSide = EnumFacing.values()[sideIndex];
+			boolean unobstructedFlag = true;
+			
 			for(int dist = 1; dist < CONNECTION_RANGE; dist++) {
 				BlockPos otherPos = pos.offset(whichSide, dist);
 				if(!world.isBlockLoaded(otherPos)) continue;
 				
-				//stop looking if this connection will be blocked.
-				if(!canConnectionPassThrough(world.getBlockState(otherPos))) break;
+				//If the connection is obstructed, mark that
+				if(!canConnectionPassThrough(world.getBlockState(otherPos))) unobstructedFlag = false;
 				
 				//FIXME: caps
 				TileEntity checkedTE = world.getTileEntity(otherPos);
 				if(checkedTE instanceof TileEntityAuraNode) {
 					TileEntityAuraNode otherTE = (TileEntityAuraNode) checkedTE;
 					if(otherTE.connectable) {
-						this.setConnection(whichSide, otherTE.pos);
-						otherTE.setConnection(whichSide.getOpposite(), this.pos);
+						this.setConnection(whichSide, otherTE.pos, unobstructedFlag);
+						otherTE.setConnection(whichSide.getOpposite(), this.pos, unobstructedFlag);
 						break;
 					}
 				}
@@ -175,36 +194,32 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 	}
 	
 	//FIXME: This method sucks ass.
-	private void removeInvalidConnections() {
+	private void updateConnections() {
 		if(world.isRemote) return;
 		
-		Iterator it = connectedTEMap.entrySet().iterator();
-		while(it.hasNext()) {
-		//for(Map.Entry<EnumFacing, BlockPos> pair : connectedTEMap.entrySet()) {
-			Map.Entry<EnumFacing, BlockPos> pair = (Map.Entry) it.next();
-			EnumFacing whichSide = pair.getKey();
+		for(Map.Entry<EnumFacing, BlockPos> pair : connectionMap.entrySet()) {
+			EnumFacing whichWay = pair.getKey();
 			BlockPos otherPos = pair.getValue();
+			boolean active = activeMap.get(whichWay);
 			
-			if(!world.isBlockLoaded(otherPos)) continue;
-			
-			//Check to make sure the connection blockpos isn't a "dangling pointer".
+			//Regardless of whether it's active, if the tile entity doesn't exist, remove it.
 			TileEntityAuraNode other = (TileEntityAuraNode) world.getTileEntity(otherPos);
 			if(other == null) {
-				//this.removeConnection(whichSide);
-				it.remove();
+				removeConnection(whichWay);
 			}
 			
-			//Check to make sure the connection is not obstructed.
-			//todo: dry (I check this on placement too)
-			int distToOther = getDistanceToConnection(whichSide);
-			for(int dist = 1; dist < distToOther; dist++) {
-				BlockPos posToCheck = pos.offset(whichSide, dist);
-				if(!world.isBlockLoaded(posToCheck)) continue;
-				
-				if(!canConnectionPassThrough(world.getBlockState(posToCheck))) {
-					this.removeConnection(whichSide);
-					break;
+			if(active) {
+				//If it's marked active, but not loaded, mark it inactive.
+				if(!world.isBlockLoaded(otherPos)) {
+					activeMap.put(whichWay, false);
+					continue;
 				}
+			}
+			
+			//If it's obstructed but active, demote it to inactive.
+			//If it's unobstructed but inactive, promote it to active.
+			if(isObstructed(whichWay) == active) {
+				activeMap.put(whichWay, !active);
 			}
 		}
 	}
@@ -213,7 +228,7 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 	public void onBreakBlock() {
 		this.connectable = false;
 		
-		for(Map.Entry<EnumFacing, BlockPos> pair : connectedTEMap.entrySet()) {
+		for(Map.Entry<EnumFacing, BlockPos> pair : connectionMap.entrySet()) {
 			TileEntityAuraNode other = (TileEntityAuraNode) CascadeUtils.getLoadedTileEntity(world, pair.getValue());
 			if(other == null) continue;
 			other.resetAllConnections();
@@ -225,36 +240,44 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 	}
 	
 	//helper functions for managing connections
+	//These will all move into the aura system capability whenever that happens.
+	//Ah, the joys of dealing with parallel data structures.
 	private void removeConnection(EnumFacing side) {
 		if(hasConnection(side)) {
-			connectedTEMap.remove(side);
+			connectionMap.remove(side);
+			activeMap.remove(side);
 			shouldDispatchPacket = true;
 		}
 	}
 	
-	private void setConnection(EnumFacing side, BlockPos otherPos) {
+	private void setConnection(EnumFacing side, BlockPos otherPos, boolean active) {
 		if(otherPos == null) return;
 		
 		//If I'm not connected there, or, if I am connected but the position is different
 		if(!hasConnection(side) || !getConnection(side).equals(otherPos)) {
-			connectedTEMap.put(side, otherPos);
+			connectionMap.put(side, otherPos);
+			activeMap.put(side, active);
 			shouldDispatchPacket = true;
 		}
 	}
 	
 	public boolean hasConnection(EnumFacing side) {
-		return connectedTEMap.containsKey(side);
+		return connectionMap.containsKey(side);
 	}
 	
 	@Nullable
 	private BlockPos getConnection(EnumFacing side) {
-		if(!hasConnection(side)) return null;
-		return connectedTEMap.get(side);
+		return connectionMap.getOrDefault(side, null);
+	}
+	
+	private boolean isConnectionActive(EnumFacing side) {
+		return activeMap.getOrDefault(side, false);
 	}
 	
 	private void clearConnections() {
-		if(!connectedTEMap.isEmpty()) {
-			connectedTEMap.clear();
+		if(!connectionMap.isEmpty()) {
+			connectionMap.clear();
+			activeMap.clear();
 			shouldDispatchPacket = true;
 		}
 	}
@@ -266,14 +289,28 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 		return CascadeUtils.blockPosDistance(pos, getConnection(side));
 	}
 	
-	public HashMap<EnumFacing, BlockPos> getConnectionMap() {
-		return connectedTEMap;
+	public ConcurrentHashMap<EnumFacing, BlockPos> getConnectionMap() {
+		return connectionMap;
 	}
 	
 	public void replaceConnectionMap(ConcurrentHashMap<EnumFacing, BlockPos> newMap) {
 		clearConnections();
-		connectedTEMap.putAll(newMap);
-		shouldDispatchPacket = true;
+		connectionMap.putAll(newMap);
+		updateConnections();
+	}
+	
+	private boolean isObstructed(EnumFacing whichWay) {
+		int distToOther = getDistanceToConnection(whichWay);
+		for(int dist = 1; dist < distToOther; dist++) {
+			BlockPos posToCheck = pos.offset(whichWay, dist);
+			//TODO: Do I need this check?
+			if(!world.isBlockLoaded(posToCheck)) continue;
+			
+			if(!canConnectionPassThrough(world.getBlockState(posToCheck))) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	private boolean canConnectionPassThrough(IBlockState state) {
@@ -286,9 +323,9 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
 		nbt.setTag(AURA_KEY, auraContainer.writeToNBTList());
 		nbt.setBoolean(CONNECTABLE_KEY, connectable);
-		nbt.setByte(AURA_COOLDOWN_KEY, auraCooldown);
+		nbt.setByte(AURA_COOLDOWN_KEY, auraAbsorptionCooldown);
 		NBTTagList connectionsList = new NBTTagList();
-		for(Map.Entry<EnumFacing, BlockPos> pair : connectedTEMap.entrySet()) {
+		for(Map.Entry<EnumFacing, BlockPos> pair : connectionMap.entrySet()) {
 			EnumFacing whichWay = pair.getKey();
 			BlockPos whichPos = pair.getValue();
 			
@@ -308,9 +345,10 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 	public void readFromNBT(NBTTagCompound nbt) {
 		auraContainer.readFromNBTList(nbt.getTagList(AURA_KEY, 10));
 		connectable = nbt.getBoolean(CONNECTABLE_KEY);
-		auraCooldown = nbt.getByte(AURA_COOLDOWN_KEY);
+		auraAbsorptionCooldown = nbt.getByte(AURA_COOLDOWN_KEY);
 		
-		connectedTEMap.clear();
+		clearConnections();
+		
 		NBTTagList connectionsList = nbt.getTagList(CONNECTIONS_LIST_KEY, 10);
 		for(NBTBase e : connectionsList) {
 			NBTTagCompound entry = (NBTTagCompound) e;
@@ -320,7 +358,7 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 							entry.getInteger("z"));
 			EnumFacing whichWay = EnumFacing.values()[entry.getInteger(FACING_KEY)];
 			
-			setConnection(whichWay, connectPos);
+			setConnection(whichWay, connectPos, false); //assume inactive
 		}
 		super.readFromNBT(nbt);
 		
