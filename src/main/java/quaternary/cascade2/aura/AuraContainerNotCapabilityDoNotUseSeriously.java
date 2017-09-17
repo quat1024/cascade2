@@ -9,11 +9,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 //Describes the amount of aura in a specific aura holder device thing.
-public class AuraContainer {
+public class AuraContainerNotCapabilityDoNotUseSeriously {
 	private ConcurrentHashMap<AuraType, Integer> auraStorage;
 	int maxTotal;
 	
-	public AuraContainer(int maxTotal_) {
+	public AuraContainerNotCapabilityDoNotUseSeriously(int maxTotal_) {
 		maxTotal = maxTotal_;
 		auraStorage = new ConcurrentHashMap<>();
 	}
@@ -66,7 +66,7 @@ public class AuraContainer {
 		return list;
 	}
 	
-	public AuraContainer readFromNBTList(NBTTagList list) {
+	public AuraContainerNotCapabilityDoNotUseSeriously readFromNBTList(NBTTagList list) {
 		auraStorage = new ConcurrentHashMap<>();
 		for(int i = 0; i < list.tagCount(); i++) {
 			NBTTagCompound entry = list.getCompoundTagAt(i);

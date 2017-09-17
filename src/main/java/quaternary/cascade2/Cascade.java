@@ -15,6 +15,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import quaternary.cascade2.aura.type.CascadeAuraTypes;
 import quaternary.cascade2.block.ModBlocks;
+import quaternary.cascade2.cap.CascadeCapabilities;
 import quaternary.cascade2.item.ModItems;
 import quaternary.cascade2.misc.CascadeCreativeTab;
 import quaternary.cascade2.net.ModPackets;
@@ -48,6 +49,7 @@ public class Cascade {
 		ModPackets.registerPackets(netwrapper);
 		
 		CascadeAuraTypes.registerAuraTypes();
+		CascadeCapabilities.registerCapabilities();
 		
 		//todo: Useless
 		MinecraftForge.EVENT_BUS.register(CascadeUtilEvents.class);

@@ -1,4 +1,4 @@
-package quaternary.cascade2.aura.type.crystal;
+package quaternary.cascade2.aura.crystal;
 
 import net.minecraft.item.ItemStack;
 import quaternary.cascade2.aura.type.AuraType;

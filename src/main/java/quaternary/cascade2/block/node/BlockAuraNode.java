@@ -38,7 +38,6 @@ public abstract class BlockAuraNode extends CascadeBlockTileEntity<TileEntityAur
 	}
 	
 	//messages to tile entity
-	
 	@Override
 	public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
 		getCastedTileEntity(worldIn, pos).onPlaceBlock();

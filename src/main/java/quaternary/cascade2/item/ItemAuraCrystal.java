@@ -6,7 +6,7 @@ import net.minecraft.util.NonNullList;
 import quaternary.cascade2.Cascade;
 import quaternary.cascade2.aura.type.AuraType;
 import quaternary.cascade2.aura.type.AuraTypeRegistry;
-import quaternary.cascade2.aura.type.crystal.IAuraCrystal;
+import quaternary.cascade2.aura.crystal.IAuraCrystal;
 
 public class ItemAuraCrystal extends CascadeItem implements IAuraCrystal {
 	//TODO move this int to aura system class

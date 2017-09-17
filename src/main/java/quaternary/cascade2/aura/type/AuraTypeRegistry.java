@@ -2,13 +2,13 @@ package quaternary.cascade2.aura.type;
 
 import java.util.HashMap;
 
-//This is not an IForgeRegistry but LOL FUCK YOU.
+//This is not an IForgeRegistry yet but... it probably should be.
 //I'll make it one if I can figure them out.
 //There's no resources for them anywhere :v
 public class AuraTypeRegistry {
 	static HashMap<String, AuraType> typeMap = new HashMap<>();
 	
-	public static void registerType(AuraType type) {
+	static void registerType(AuraType type) {
 		typeMap.put(type.getName(), type);
 	}
 	

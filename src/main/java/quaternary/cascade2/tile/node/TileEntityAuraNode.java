@@ -15,9 +15,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import quaternary.cascade2.aura.AuraContainer;
+import quaternary.cascade2.Cascade;
+import quaternary.cascade2.aura.AuraContainerNotCapabilityDoNotUseSeriously;
 import quaternary.cascade2.aura.type.AuraType;
-import quaternary.cascade2.aura.type.crystal.IAuraCrystal;
+import quaternary.cascade2.aura.crystal.IAuraCrystal;
 import quaternary.cascade2.net.util.CascadePacketUtils;
 import quaternary.cascade2.tile.CascadeTileEntity;
 import quaternary.cascade2.util.CascadeUtils;
@@ -36,7 +37,7 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 	private static final AxisAlignedBB ITEM_DETECTION_AABB = new AxisAlignedBB(0, 0, 0, 1, 1, 1);
 	
 	//per-node prop stuff
-	public AuraContainer auraContainer = new AuraContainer(1000);
+	public AuraContainerNotCapabilityDoNotUseSeriously auraContainer = new AuraContainerNotCapabilityDoNotUseSeriously(1000);
 	public boolean connectable = true;
 	//ticks until another aura crystal can be accepted
 	public byte auraCooldown = 0;
@@ -99,7 +100,11 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 	
 	@Override
 	public void onLoad() {
-		if(!world.isRemote) this.resetAllConnections();
+		if(world.isRemote) {
+			dirtyAABB = true;
+		} else {
+			this.resetAllConnections();
+		}
 	}
 	
 	//Temp!!!!!!!!
@@ -113,18 +118,18 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 		}
 		
 		Cascade.LOGGER.info("Printing connections:");
-		
+		*/
+		if(!world.isRemote) return;
 		for(Map.Entry<EnumFacing,BlockPos> pair : connectedTEMap.entrySet()) {
 			Cascade.LOGGER.info("Side: " + pair.getKey() + " Pos: " + pair.getValue());
-		}*/
+		}
 	}
 	
 	//rendering stuff
 	@Override
 	@SideOnly(Side.CLIENT)
 	public AxisAlignedBB getRenderBoundingBox() {
-		if(renderAABB == null) renderAABB = new AxisAlignedBB(pos);
-		if(dirtyAABB) recalculateRenderBoundingBox();
+		if(dirtyAABB || renderAABB == null) recalculateRenderBoundingBox();
 		return renderAABB;
 	}
 	
@@ -313,6 +318,8 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 		}
 		super.readFromNBT(nbt);
 		
-		if(world.isRemote) dirtyAABB = true;
+		//for some reason world is null on the server but not client right now
+		//so this is basically "world.isRemote"
+		if(world != null) dirtyAABB = true;
 	}
 }

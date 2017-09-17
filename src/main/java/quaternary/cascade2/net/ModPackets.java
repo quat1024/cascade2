@@ -4,6 +4,6 @@ import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 
 public class ModPackets {
 	public static void registerPackets(SimpleNetworkWrapper nethandler) {
-		//NO OP
+		//NO OP for now
 	}
 }
