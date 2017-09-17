@@ -24,6 +24,8 @@ import quaternary.cascade2.tile.CascadeTileEntity;
 import quaternary.cascade2.util.CascadeUtils;
 
 import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -50,7 +52,7 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 	private static final String FACING_KEY = "Facing";
 	
 	//connection storage stuff
-	private ConcurrentHashMap<EnumFacing, BlockPos> connectedTEMap = new ConcurrentHashMap<>();
+	private HashMap<EnumFacing, BlockPos> connectedTEMap = new HashMap<>();
 	
 	//packet stuff
 	//todo: am I doing this right? I'm basically stealing what botania does shh
@@ -176,7 +178,10 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 	private void removeInvalidConnections() {
 		if(world.isRemote) return;
 		
-		for(Map.Entry<EnumFacing, BlockPos> pair : connectedTEMap.entrySet()) {
+		Iterator it = connectedTEMap.entrySet().iterator();
+		while(it.hasNext()) {
+		//for(Map.Entry<EnumFacing, BlockPos> pair : connectedTEMap.entrySet()) {
+			Map.Entry<EnumFacing, BlockPos> pair = (Map.Entry) it.next();
 			EnumFacing whichSide = pair.getKey();
 			BlockPos otherPos = pair.getValue();
 			
@@ -185,7 +190,8 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 			//Check to make sure the connection blockpos isn't a "dangling pointer".
 			TileEntityAuraNode other = (TileEntityAuraNode) world.getTileEntity(otherPos);
 			if(other == null) {
-				this.removeConnection(whichSide);
+				//this.removeConnection(whichSide);
+				it.remove();
 			}
 			
 			//Check to make sure the connection is not obstructed.
@@ -260,7 +266,7 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 		return CascadeUtils.blockPosDistance(pos, getConnection(side));
 	}
 	
-	public ConcurrentHashMap<EnumFacing, BlockPos> getConnectionMap() {
+	public HashMap<EnumFacing, BlockPos> getConnectionMap() {
 		return connectedTEMap;
 	}
 	

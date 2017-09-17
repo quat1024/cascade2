@@ -5,17 +5,19 @@ import net.minecraft.nbt.NBTTagList;
 import quaternary.cascade2.aura.type.AuraType;
 import quaternary.cascade2.aura.type.AuraTypeRegistry;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 //Describes the amount of aura in a specific aura holder device thing.
+@Deprecated
 public class AuraContainerNotCapabilityDoNotUseSeriously {
-	private ConcurrentHashMap<AuraType, Integer> auraStorage;
+	private HashMap<AuraType, Integer> auraStorage;
 	int maxTotal;
 	
 	public AuraContainerNotCapabilityDoNotUseSeriously(int maxTotal_) {
 		maxTotal = maxTotal_;
-		auraStorage = new ConcurrentHashMap<>();
+		auraStorage = new HashMap<>();
 	}
 	
 	//Returns whether the aura adding operation was successful.
@@ -67,7 +69,7 @@ public class AuraContainerNotCapabilityDoNotUseSeriously {
 	}
 	
 	public AuraContainerNotCapabilityDoNotUseSeriously readFromNBTList(NBTTagList list) {
-		auraStorage = new ConcurrentHashMap<>();
+		auraStorage = new HashMap<>();
 		for(int i = 0; i < list.tagCount(); i++) {
 			NBTTagCompound entry = list.getCompoundTagAt(i);
 			AuraType type = AuraTypeRegistry.fromString(entry.getString(TYPE_KEY));
