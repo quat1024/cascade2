@@ -1,7 +1,10 @@
 package quaternary.cascade2.util;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
 public class CascadeUtils {
@@ -21,5 +24,9 @@ public class CascadeUtils {
 	public static TileEntity getLoadedTileEntity(World world, BlockPos pos) {
 		if(world.isBlockLoaded(pos)) return world.getTileEntity(pos);
 		else return null;
+	}
+	
+	public static void sendChatMessage(EntityPlayer p, String msg) {
+		p.sendMessage(new TextComponentString(msg));
 	}
 }

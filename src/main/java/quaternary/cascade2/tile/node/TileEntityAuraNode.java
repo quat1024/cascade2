@@ -2,10 +2,7 @@ package quaternary.cascade2.tile.node;
 // Comment with space after the slashes to appease Nerxit.
 
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -14,356 +11,198 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import quaternary.cascade2.Cascade;
 import quaternary.cascade2.aura.AuraContainerNotCapabilityDoNotUseSeriously;
-import quaternary.cascade2.aura.type.AuraType;
-import quaternary.cascade2.aura.crystal.IAuraCrystal;
-import quaternary.cascade2.net.util.CascadePacketUtils;
 import quaternary.cascade2.tile.CascadeTileEntity;
 import quaternary.cascade2.util.CascadeUtils;
 
-import javax.annotation.Nullable;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-//This class is fkin huge but things will get split off eventually, don't worry
-
 public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 	
-	//global setting stuff
 	private static final int CONNECTION_RANGE = 16;
 	private static final AxisAlignedBB ITEM_DETECTION_AABB = new AxisAlignedBB(0, 0, 0, 1, 1, 1);
 	
-	//per-node prop stuff
-	public AuraContainerNotCapabilityDoNotUseSeriously auraContainer = new AuraContainerNotCapabilityDoNotUseSeriously(1000);
-	public boolean connectable = true;
-	//ticks until another aura crystal can be accepted
-	public byte auraAbsorptionCooldown = 0;
+	private AuraContainerNotCapabilityDoNotUseSeriously auraContainer = new AuraContainerNotCapabilityDoNotUseSeriously(1000);
+	private byte absorptionCooldown = 0;
 	
-	//node nbt stuff
-	private static final String AURA_KEY = "Aura";
-	private static final String AURA_COOLDOWN_KEY = "AuraCooldown";
-	private static final String CONNECTABLE_KEY = "Connectable";
-	private static final String CONNECTIONS_LIST_KEY = "ConnectionList";
-	private static final String FACING_KEY = "Facing";
-	
-	//connection storage stuff
-	/** Stores all connections from this aura container to other containers. */
-	private ConcurrentHashMap<EnumFacing, BlockPos> connectionMap = new ConcurrentHashMap<>();
-	/** Stores whether the connection is "active", i.e. unobstructed. */
-	private ConcurrentHashMap<EnumFacing, Boolean> activeMap = new ConcurrentHashMap<>();
-	
-	//packet stuff
-	//todo: am I doing this right? I'm basically stealing what botania does shh
-	private boolean shouldDispatchPacket;
-	
-	//render aabb stuff
-	@SideOnly(Side.CLIENT)
-	private boolean dirtyAABB;
-	@SideOnly(Side.CLIENT)
-	private AxisAlignedBB renderAABB;
+	//This is a thing I could put in the cap
+	private ConcurrentHashMap<EnumFacing, ConnectionData> connections = new ConcurrentHashMap<>();
 	
 	public void update() {
-		if(!world.isRemote) {
-			//FIXME: Don't use hacky bullshit.
-			if(shouldDispatchPacket) {
-				CascadePacketUtils.dispatchTEToNearby(this);
-				shouldDispatchPacket = false;
-			}
-			
-			if(world.getWorldTime() % 20 == 0) {
-				updateConnections();
-			}
-			
-			if(auraAbsorptionCooldown > 0) auraAbsorptionCooldown--;
-			
-			if(auraAbsorptionCooldown == 0) {
-				List<EntityItem> nearbyItems = world.getEntitiesWithinAABB(EntityItem.class, ITEM_DETECTION_AABB.offset(this.pos));
-				
-				//FIXME: Capabilities instead of instanceof checks
-				nearbyItems.removeIf(itemEntity -> itemEntity.getItem/*Stack*/().isEmpty() || !(itemEntity.getItem/*Stack*/().getItem() instanceof IAuraCrystal));
-				
-				if(!nearbyItems.isEmpty()) {
-					for(EntityItem ent : nearbyItems) {
-						ItemStack stack = ent.getItem/*Stack*/();
-						IAuraCrystal crystalItem = (IAuraCrystal) stack.getItem();
-						
-						AuraType type = crystalItem.getAuraType(stack);
-						int auraToAdd = crystalItem.getAuraContained(stack);
-						
-						if(auraContainer.canAddAuraAmount(auraToAdd)) {
-							auraContainer.addAuraOfType(type, auraToAdd);
-							auraAbsorptionCooldown = 20;
-							stack.shrink(1);
-							break; //only eat one stack at a time
-						}
-					}
-				}
-			}
-		}
-	}
-	
-	@Override
-	public void onLoad() {
-		if(world.isRemote) {
-			dirtyAABB = true;
-		} else {
-			this.resetAllConnections();
-		}
-	}
-	
-	//Temp!!!!!!!!
-	public void onActivated(World www, EntityPlayer player) {
-		/*if(player.isSneaking()) {
-			Cascade.LOGGER.info("Rechecking all connections from scratch:");
-			resetAllConnections();
-		} else {
-			Cascade.LOGGER.info("Verifying all connections:");
-			removeInvalidConnections();
-		}
 		
-		Cascade.LOGGER.info("Printing connections:");
-		*/
-		if(!world.isRemote) return;
-		
-		player.sendMessage(new TextComponentString("My name Jeff!!!! xD"));
-		
-		for(Map.Entry<EnumFacing, BlockPos> pair : connectionMap.entrySet()) {
-			EnumFacing whichWay = pair.getKey();
-			BlockPos whatPos = pair.getValue();
-			//This SHOUDN'T cause any problems because the hashmaps SHOULD be parallel.
-			//It looks really fuckin scary though. Right? Tell me that doesn't look scary.
-			boolean active = activeMap.get(whichWay);
-			boolean active2 = isConnectionActive(whichWay);
-			player.sendMessage(new TextComponentString("Side: " + whichWay + " Pos: " + whatPos + " Active: " + active2));
-		}
 	}
 	
-	//rendering stuff
-	@Override
-	@SideOnly(Side.CLIENT)
-	public AxisAlignedBB getRenderBoundingBox() {
-		if(dirtyAABB || renderAABB == null) recalculateRenderBoundingBox();
-		return renderAABB;
-	}
-	
-	private void recalculateRenderBoundingBox() {
-		int lengthX = hasConnection(EnumFacing.EAST) ? getDistanceToConnection(EnumFacing.EAST) : 0;
-		int lengthY = hasConnection(EnumFacing.UP) ? getDistanceToConnection(EnumFacing.UP) : 0;
-		int lengthZ = hasConnection(EnumFacing.SOUTH) ? getDistanceToConnection(EnumFacing.SOUTH) : 0;
-		
-		renderAABB = new AxisAlignedBB(pos.getX(), pos.getY(), pos.getZ(),
-						pos.getX() + lengthX + 1, pos.getY() + lengthY + 1, pos.getZ() + lengthZ + 1);
-		dirtyAABB = false;
-	}
-	
-	//connection managing
-	private void resetAllConnections() {
+	private void scanForConnections() {
 		if(world.isRemote) return;
 		
-		clearConnections();
-		
-		for(int sideIndex = 0; sideIndex < EnumFacing.values().length; sideIndex++) {
-			EnumFacing whichSide = EnumFacing.values()[sideIndex];
-			boolean unobstructedFlag = true;
-			
+		for(EnumFacing whichWay : EnumFacing.values()) {
+			boolean unblocked = true;
 			for(int dist = 1; dist < CONNECTION_RANGE; dist++) {
-				BlockPos otherPos = pos.offset(whichSide, dist);
-				if(!world.isBlockLoaded(otherPos)) continue;
+				BlockPos otherPos = pos.offset(whichWay, dist);
 				
-				//If the connection is obstructed, mark that
-				if(!canConnectionPassThrough(world.getBlockState(otherPos))) unobstructedFlag = false;
+				if(canConnectionPassThrough(world.getBlockState(otherPos))) unblocked = false;
 				
-				//FIXME: caps
 				TileEntity checkedTE = world.getTileEntity(otherPos);
-				if(checkedTE instanceof TileEntityAuraNode) {
-					TileEntityAuraNode otherTE = (TileEntityAuraNode) checkedTE;
-					if(otherTE.connectable) {
-						this.setConnection(whichSide, otherTE.pos, unobstructedFlag);
-						otherTE.setConnection(whichSide.getOpposite(), this.pos, unobstructedFlag);
-						break;
-					}
+				if(checkedTE != null && checkedTE instanceof TileEntityAuraNode) {
+					this.setConnection(whichWay, otherPos, unblocked);
+					((TileEntityAuraNode) checkedTE).setConnection(whichWay.getOpposite(), this.pos, unblocked);
+					break;
 				}
 			}
 		}
 	}
 	
-	//FIXME: This method sucks ass.
-	private void updateConnections() {
-		if(world.isRemote) return;
-		
-		for(Map.Entry<EnumFacing, BlockPos> pair : connectionMap.entrySet()) {
-			EnumFacing whichWay = pair.getKey();
-			BlockPos otherPos = pair.getValue();
-			boolean active = activeMap.get(whichWay);
-			
-			//Regardless of whether it's active, if the tile entity doesn't exist, remove it.
-			TileEntityAuraNode other = (TileEntityAuraNode) world.getTileEntity(otherPos);
-			if(other == null) {
-				removeConnection(whichWay);
-			}
-			
-			if(active) {
-				//If it's marked active, but not loaded, mark it inactive.
-				if(!world.isBlockLoaded(otherPos)) {
-					activeMap.put(whichWay, false);
-					continue;
-				}
-			}
-			
-			//If it's obstructed but active, demote it to inactive.
-			//If it's unobstructed but inactive, promote it to active.
-			if(isObstructed(whichWay) == active) {
-				activeMap.put(whichWay, !active);
-			}
-		}
+	//Helpers which should go in the capability
+	private boolean canConnectionPassThrough(IBlockState state) {
+		return state.getMaterial().isReplaceable() || state.getMaterial().isLiquid() && 
+						!(state.isOpaqueCube() || state.isFullCube() || state.isFullBlock());
 	}
 	
-	//block interactions
-	public void onBreakBlock() {
-		this.connectable = false;
+	private void resetAllConnections() {
+		connections.clear();
+	}
+	
+	private void setConnection(EnumFacing key, BlockPos otherPos, boolean unblocked) {
+		ConnectionData toAdd = new ConnectionData(otherPos, unblocked);
+		if(toAdd.equals(connections.get(key))) return;
 		
-		for(Map.Entry<EnumFacing, BlockPos> pair : connectionMap.entrySet()) {
-			TileEntityAuraNode other = (TileEntityAuraNode) CascadeUtils.getLoadedTileEntity(world, pair.getValue());
-			if(other == null) continue;
-			other.resetAllConnections();
+		connections.put(key, new ConnectionData(otherPos, unblocked));
+	}
+	
+	private ConcurrentHashMap<EnumFacing, ConnectionData> getConnections() {
+		return connections;
+	}
+	
+	//todo: dirty flag this maybe?
+	//because it will only ever update when the connection map does, if then
+	public ConcurrentHashMap<EnumFacing, ConnectionData> getActiveConnections() {
+		//TIMES LIKE THIS ARE WHERE I WISH I HAD SUPER AWESOME FUNCTIONAL LANG POWERS
+		//BUT OH WELL GUESS I'LL JUST FORLOOP
+		//BECAUSE IT'S LITERALLY BETTER THAN JAVA'S SHITTY STREAM BULL SHIT
+		//S I G H
+		ConcurrentHashMap<EnumFacing, ConnectionData> newConnections = new ConcurrentHashMap<>();
+		for(Map.Entry<EnumFacing, ConnectionData> pair : connections.entrySet()) {
+			if(pair.getValue().unblocked) {
+				newConnections.put(pair.getKey(), pair.getValue());
+			}
+		}
+		return newConnections;
+	}
+	
+	//Events called from blockauranode
+	public void onActivated(World w, EntityPlayer player) {
+		//CascadeUtils.sendChatMessage(player, world.isRemote ? "Hi i'm the client" : "I'm the server");
+		
+		if(world.isRemote) CascadeUtils.sendChatMessage(player, "My name Jeff!!!!! xD");
+		for(Map.Entry<EnumFacing, ConnectionData> pair : connections.entrySet()) {
+			CascadeUtils.sendChatMessage(player,
+							(world.isRemote ? "C " + TextFormatting.GREEN : "S " + TextFormatting.AQUA) +
+							"Side: " + pair.getKey() + " " + pair.getValue().toNiceString());
 		}
 	}
 	
 	public void onPlaceBlock() {
-		resetAllConnections();
+		scanForConnections();
 	}
 	
-	//helper functions for managing connections
-	//These will all move into the aura system capability whenever that happens.
-	//Ah, the joys of dealing with parallel data structures.
-	private void removeConnection(EnumFacing side) {
-		if(hasConnection(side)) {
-			connectionMap.remove(side);
-			activeMap.remove(side);
-			shouldDispatchPacket = true;
-		}
-	}
-	
-	private void setConnection(EnumFacing side, BlockPos otherPos, boolean active) {
-		if(otherPos == null) return;
+	public void onBreakBlock() {
+		world.removeTileEntity(pos);
 		
-		//If I'm not connected there, or, if I am connected but the position is different
-		if(!hasConnection(side) || !getConnection(side).equals(otherPos)) {
-			connectionMap.put(side, otherPos);
-			activeMap.put(side, active);
-			shouldDispatchPacket = true;
+		for(Map.Entry<EnumFacing, ConnectionData> pair : connections.entrySet()) {
+			TileEntityAuraNode other = (TileEntityAuraNode) world.getTileEntity(pos);
+			if(other == null) continue;
+			other.resetAllConnections();
+			other.scanForConnections();
 		}
 	}
 	
-	public boolean hasConnection(EnumFacing side) {
-		return connectionMap.containsKey(side);
-	}
+	//NBT save load junk
+	private static final String AURA_KEY = "Aura";
+	private static final String ABSORPTION_COOLDOWN_KEY = "AuraCooldown";
+	private static final String CONNECTIONS_LIST_KEY = "Connections";
+	private static final String CONNECTION_DATA_KEY = "Data";
+	private static final String FACING_KEY = "Facing";
 	
-	@Nullable
-	private BlockPos getConnection(EnumFacing side) {
-		return connectionMap.getOrDefault(side, null);
-	}
-	
-	private boolean isConnectionActive(EnumFacing side) {
-		return activeMap.getOrDefault(side, false);
-	}
-	
-	private void clearConnections() {
-		if(!connectionMap.isEmpty()) {
-			connectionMap.clear();
-			activeMap.clear();
-			shouldDispatchPacket = true;
-		}
-	}
-	
-	public int getDistanceToConnection(EnumFacing side) {
-		if(!hasConnection(side))
-			throw new IllegalArgumentException("Tried to get distance to nonexistent side " + side.getName());
-		
-		return CascadeUtils.blockPosDistance(pos, getConnection(side));
-	}
-	
-	public ConcurrentHashMap<EnumFacing, BlockPos> getConnectionMap() {
-		return connectionMap;
-	}
-	
-	public void replaceConnectionMap(ConcurrentHashMap<EnumFacing, BlockPos> newMap) {
-		clearConnections();
-		connectionMap.putAll(newMap);
-		updateConnections();
-	}
-	
-	private boolean isObstructed(EnumFacing whichWay) {
-		int distToOther = getDistanceToConnection(whichWay);
-		for(int dist = 1; dist < distToOther; dist++) {
-			BlockPos posToCheck = pos.offset(whichWay, dist);
-			//TODO: Do I need this check?
-			if(!world.isBlockLoaded(posToCheck)) continue;
-			
-			if(!canConnectionPassThrough(world.getBlockState(posToCheck))) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	private boolean canConnectionPassThrough(IBlockState state) {
-		if(state.getMaterial().isReplaceable() || state.getMaterial().isLiquid()) return true;
-		return !(state.isOpaqueCube() || state.isFullCube() || state.isFullBlock());
-	}
-	
-	//nbt stuff
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
 		nbt.setTag(AURA_KEY, auraContainer.writeToNBTList());
-		nbt.setBoolean(CONNECTABLE_KEY, connectable);
-		nbt.setByte(AURA_COOLDOWN_KEY, auraAbsorptionCooldown);
-		NBTTagList connectionsList = new NBTTagList();
-		for(Map.Entry<EnumFacing, BlockPos> pair : connectionMap.entrySet()) {
+		nbt.setByte(ABSORPTION_COOLDOWN_KEY, absorptionCooldown);
+		NBTTagList nbtlist = new NBTTagList();
+		for(Map.Entry<EnumFacing, ConnectionData> pair : connections.entrySet()) {
 			EnumFacing whichWay = pair.getKey();
-			BlockPos whichPos = pair.getValue();
+			ConnectionData data = pair.getValue();
 			
-			NBTTagCompound connectionCompound = new NBTTagCompound();
-			connectionCompound.setInteger(FACING_KEY, whichWay.getIndex());
-			connectionCompound.setInteger("x", whichPos.getX());
-			connectionCompound.setInteger("y", whichPos.getY());
-			connectionCompound.setInteger("z", whichPos.getZ());
-			connectionsList.appendTag(connectionCompound);
+			NBTTagCompound item = new NBTTagCompound();
+			item.setInteger(FACING_KEY, whichWay.getIndex());
+			item.setTag(CONNECTION_DATA_KEY, data.toNBTCompound());
+			
+			nbtlist.appendTag(item);
 		}
-		nbt.setTag(CONNECTIONS_LIST_KEY, connectionsList);
+		nbt.setTag(CONNECTIONS_LIST_KEY, nbtlist);
 		
 		return super.writeToNBT(nbt);
 	}
 	
 	@Override
 	public void readFromNBT(NBTTagCompound nbt) {
-		auraContainer.readFromNBTList(nbt.getTagList(AURA_KEY, 10));
-		connectable = nbt.getBoolean(CONNECTABLE_KEY);
-		auraAbsorptionCooldown = nbt.getByte(AURA_COOLDOWN_KEY);
+		auraContainer.readFromNBTList(nbt.getTagList(AURA_KEY, 10)); //The 10 is some magic number idk.
+		absorptionCooldown = nbt.getByte(ABSORPTION_COOLDOWN_KEY);
 		
-		clearConnections();
-		
-		NBTTagList connectionsList = nbt.getTagList(CONNECTIONS_LIST_KEY, 10);
-		for(NBTBase e : connectionsList) {
+		connections.clear();
+		NBTTagList conlist = nbt.getTagList(CONNECTIONS_LIST_KEY, 10);
+		for(NBTBase e : conlist) {
 			NBTTagCompound entry = (NBTTagCompound) e;
-			BlockPos connectPos = new BlockPos(
-							entry.getInteger("x"),
-							entry.getInteger("y"),
-							entry.getInteger("z"));
-			EnumFacing whichWay = EnumFacing.values()[entry.getInteger(FACING_KEY)];
 			
-			setConnection(whichWay, connectPos, false); //assume inactive
+			EnumFacing whichWay = EnumFacing.values()[entry.getInteger(FACING_KEY)];
+			ConnectionData data = new ConnectionData(entry);
+			
+			//todo: should i go through an "official channel" or just write directly?
+			//I think this is better, honestly: the getters and setters made more sense
+			//when I was using more than just a very simple k/v hashmap
+			//But when a getter is just a wrapper for the hashmap's getter...? no.
+			connections.put(whichWay, data);
 		}
-		super.readFromNBT(nbt);
 		
-		//for some reason world is null on the server but not client right now
-		//so this is basically "world.isRemote"
-		if(world != null) dirtyAABB = true;
+		super.readFromNBT(nbt);
+	}
+	
+	public class ConnectionData {
+		public BlockPos position;
+		public boolean unblocked;
+		
+		public ConnectionData(BlockPos position_, boolean unblocked_) {
+			position = position_;
+			unblocked = unblocked_;
+		}
+		
+		public ConnectionData(NBTTagCompound fromNBT) {
+			position = new BlockPos(
+							fromNBT.getInteger("x"),
+							fromNBT.getInteger("y"),
+							fromNBT.getInteger("z")
+			);
+			unblocked = fromNBT.getBoolean("Unblocked");
+		}
+		
+		public NBTTagCompound toNBTCompound() {
+			NBTTagCompound blah = new NBTTagCompound();
+			blah.setInteger("x", position.getX());
+			blah.setInteger("y", position.getY());
+			blah.setInteger("z", position.getZ());
+			blah.setBoolean("Unblocked", unblocked);
+			return blah;
+		}
+		
+		String toNiceString() {
+			return "Pos: " + position.getX() + " " + position.getY() + " " + position.getZ() + " " + (unblocked ? " Unblocked" : " Blocked");
+		}
+		
+		boolean equals(ConnectionData other) {
+			if(other == null) return false;
+			return position.equals(other.position) && (unblocked == other.unblocked);
+		}
 	}
 }

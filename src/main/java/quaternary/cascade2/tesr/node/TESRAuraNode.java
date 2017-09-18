@@ -37,11 +37,11 @@ public class TESRAuraNode extends TileEntitySpecialRenderer<TileEntityAuraNode> 
 		
 		buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR_NORMAL);
 		
-		for(Map.Entry<EnumFacing, BlockPos> pair : te.getConnectionMap().entrySet()) {
+		for(Map.Entry<EnumFacing, TileEntityAuraNode.ConnectionData> pair : te.getActiveConnections().entrySet()) {
 			EnumFacing whichWay = pair.getKey();
 			//I don't want to render connections 2 times from 2 nodes
 			if(whichWay.getAxisDirection() == EnumFacing.AxisDirection.POSITIVE) {
-				BlockPos otherPos = pair.getValue();
+				BlockPos otherPos = pair.getValue().position;
 				float x2 = otherPos.getX() - myPos.getX() + .5f + THICC;
 				float y2 = otherPos.getY() - myPos.getY() + .5f + THICC;
 				float z2 = otherPos.getZ() - myPos.getZ() + .5f + THICC;
