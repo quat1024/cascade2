@@ -25,7 +25,7 @@ import quaternary.cascade2.util.CascadeUtilEvents;
 @Mod(modid = Cascade.MODID, name = Cascade.NAME, version = Cascade.VERSION)
 public class Cascade {
 	public static final String MODID = "cascade2";
-	public static final String NAME = "Cascade";
+	public static final String NAME = "Halogen";
 	public static final String VERSION = "0";
 	
 	@Mod.Instance
@@ -41,6 +41,7 @@ public class Cascade {
 	public static SimpleNetworkWrapper netwrapper;
 	
 	@Mod.EventHandler
+	@SuppressWarnings("unused")
 	public void preinit(FMLPreInitializationEvent e) {
 		PROXY.registerTESRs();
 		
@@ -58,17 +59,20 @@ public class Cascade {
 	@Mod.EventBusSubscriber
 	public static class RegistrationEvents {
 		@SubscribeEvent
+		@SuppressWarnings("unused")
 		public static void blocks(RegistryEvent.Register<Block> e) {
 			ModBlocks.registerBlocks(e.getRegistry());
 		}
 		
 		@SubscribeEvent
+		@SuppressWarnings("unused")
 		public static void items(RegistryEvent.Register<Item> e) {
 			ModBlocks.registerItemBlocks(e.getRegistry());
 			ModItems.registerItems(e.getRegistry());
 		}
 		
 		@SubscribeEvent
+		@SuppressWarnings("unused")
 		public static void itemModels(ModelRegistryEvent e) {
 			ModBlocks.registerItemBlockModels();
 			ModItems.registerItemModels();

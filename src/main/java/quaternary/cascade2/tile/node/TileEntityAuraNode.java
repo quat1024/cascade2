@@ -13,10 +13,14 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import quaternary.cascade2.aura.AuraContainerNotCapabilityDoNotUseSeriously;
+import net.minecraftforge.common.capabilities.Capability;
+import quaternary.cascade2.cap.CascadeCapabilities;
+import quaternary.cascade2.cap.aura.AuraHolderBase;
+import quaternary.cascade2.cap.aura.IAuraHolder;
 import quaternary.cascade2.tile.CascadeTileEntity;
 import quaternary.cascade2.util.CascadeUtils;
 
+import javax.annotation.Nonnull;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -25,14 +29,29 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 	private static final int CONNECTION_RANGE = 16;
 	private static final AxisAlignedBB ITEM_DETECTION_AABB = new AxisAlignedBB(0, 0, 0, 1, 1, 1);
 	
-	private AuraContainerNotCapabilityDoNotUseSeriously auraContainer = new AuraContainerNotCapabilityDoNotUseSeriously(1000);
+	private final IAuraHolder auraCapImpl = new AuraHolderBase(1000);
+	
 	private byte absorptionCooldown = 0;
 	
-	//This is a thing I could put in the cap
+	//This is a thing I could put in a cap
 	private ConcurrentHashMap<EnumFacing, ConnectionData> connections = new ConcurrentHashMap<>();
 	
 	public void update() {
 		
+	}
+	
+	@Override
+	public boolean hasCapability(Capability<?> hat, EnumFacing side) {
+		if(hat == CascadeCapabilities.AURA_HOLDER) {
+			return true;
+		} else return super.hasCapability(hat, side);
+	}
+	
+	@Override
+	public <T> T getCapability(@Nonnull Capability<T> hat, EnumFacing side) {
+		if(hat == CascadeCapabilities.AURA_HOLDER) {
+			return CascadeCapabilities.AURA_HOLDER.cast(auraCapImpl);
+		} else return super.getCapability(hat, side);
 	}
 	
 	private void scanForConnections() {
@@ -79,10 +98,7 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 	//todo: dirty flag this maybe?
 	//because it will only ever update when the connection map does, if then
 	public ConcurrentHashMap<EnumFacing, ConnectionData> getActiveConnections() {
-		//TIMES LIKE THIS ARE WHERE I WISH I HAD SUPER AWESOME FUNCTIONAL LANG POWERS
-		//BUT OH WELL GUESS I'LL JUST FORLOOP
-		//BECAUSE IT'S LITERALLY BETTER THAN JAVA'S SHITTY STREAM BULL SHIT
-		//S I G H
+		//i want functional language
 		ConcurrentHashMap<EnumFacing, ConnectionData> newConnections = new ConcurrentHashMap<>();
 		for(Map.Entry<EnumFacing, ConnectionData> pair : connections.entrySet()) {
 			if(pair.getValue().unblocked) {
@@ -128,7 +144,7 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 	
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
-		nbt.setTag(AURA_KEY, auraContainer.writeToNBTList());
+		nbt.setTag(AURA_KEY, auraCapImpl.writeNBT());
 		nbt.setByte(ABSORPTION_COOLDOWN_KEY, absorptionCooldown);
 		NBTTagList nbtlist = new NBTTagList();
 		for(Map.Entry<EnumFacing, ConnectionData> pair : connections.entrySet()) {
@@ -148,7 +164,7 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 	
 	@Override
 	public void readFromNBT(NBTTagCompound nbt) {
-		auraContainer.readFromNBTList(nbt.getTagList(AURA_KEY, 10)); //The 10 is some magic number idk.
+		auraCapImpl.readNBT(nbt.getTagList(AURA_KEY, 10)); //The 10 is some magic number idk.
 		absorptionCooldown = nbt.getByte(ABSORPTION_COOLDOWN_KEY);
 		
 		connections.clear();
