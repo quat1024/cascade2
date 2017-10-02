@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class AuraHolderBase implements IAuraHolder {
-	private ConcurrentHashMap<AuraType, Integer> auraStorage;
+	private ConcurrentHashMap<AuraType, Integer> auraStorage = new ConcurrentHashMap<>();
 	private int maxTotal;
 	
 	public AuraHolderBase(int maxTotal_) {
@@ -97,6 +97,7 @@ public class AuraHolderBase implements IAuraHolder {
 	}
 	
 	public void readNBT(NBTBase nbt) {
+		if(!(nbt instanceof NBTTagList)) throw new IllegalArgumentException("Tried to decode " + nbt + " into an aura holder capability but it's not even an nbt list? what am I supposed to do with this? dunno man");
 		NBTTagList list = (NBTTagList) nbt;
 		clearAura();
 		for(int i = 0; i < list.tagCount(); i++) {

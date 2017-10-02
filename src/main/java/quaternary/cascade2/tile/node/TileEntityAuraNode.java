@@ -6,7 +6,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -14,110 +13,91 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
-import quaternary.cascade2.cap.CascadeCapabilities;
+import quaternary.cascade2.Cascade;
+import quaternary.cascade2.cap.CascadeCaps;
 import quaternary.cascade2.cap.aura.AuraHolderBase;
 import quaternary.cascade2.cap.aura.IAuraHolder;
+import quaternary.cascade2.cap.aura.connection.AuraConnectableBase;
+import quaternary.cascade2.cap.aura.connection.ConnectionData;
+import quaternary.cascade2.cap.aura.connection.IAuraConnectable;
 import quaternary.cascade2.tile.CascadeTileEntity;
 import quaternary.cascade2.util.CascadeUtils;
 
 import javax.annotation.Nonnull;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 	
 	private static final int CONNECTION_RANGE = 16;
 	private static final AxisAlignedBB ITEM_DETECTION_AABB = new AxisAlignedBB(0, 0, 0, 1, 1, 1);
 	
-	private final IAuraHolder auraCapImpl = new AuraHolderBase(1000);
+	private final IAuraHolder auraHolderCap = new AuraHolderBase(1000);
+	private final IAuraConnectable auraConnectCap = new AuraConnectableBase();
 	
 	private byte absorptionCooldown = 0;
 	
 	//This is a thing I could put in a cap
-	private ConcurrentHashMap<EnumFacing, ConnectionData> connections = new ConcurrentHashMap<>();
+	//private ConcurrentHashMap<EnumFacing, ConnectionData> connections = new ConcurrentHashMap<>();
 	
 	public void update() {
-		
+		//benis
 	}
 	
 	@Override
 	public boolean hasCapability(Capability<?> hat, EnumFacing side) {
-		if(hat == CascadeCapabilities.AURA_HOLDER) {
+		if(hat == CascadeCaps.AURA_HOLDER || hat == CascadeCaps.AURA_CONNECTABLE) {
 			return true;
 		} else return super.hasCapability(hat, side);
 	}
 	
 	@Override
 	public <T> T getCapability(@Nonnull Capability<T> hat, EnumFacing side) {
-		if(hat == CascadeCapabilities.AURA_HOLDER) {
-			return CascadeCapabilities.AURA_HOLDER.cast(auraCapImpl);
+		if(hat == CascadeCaps.AURA_HOLDER) {
+			return CascadeCaps.AURA_HOLDER.cast(auraHolderCap);
+		} else if(hat == CascadeCaps.AURA_CONNECTABLE) {
+			return CascadeCaps.AURA_CONNECTABLE.cast(auraConnectCap);
 		} else return super.getCapability(hat, side);
 	}
 	
+	//todo: these just skip over and call the capability
+	//how about, instead of calling these and tunneling right to the cap,
+	//just call the capability directly :thinking:
 	private void scanForConnections() {
-		if(world.isRemote) return;
-		
-		for(EnumFacing whichWay : EnumFacing.values()) {
-			boolean unblocked = true;
-			for(int dist = 1; dist < CONNECTION_RANGE; dist++) {
-				BlockPos otherPos = pos.offset(whichWay, dist);
-				
-				if(canConnectionPassThrough(world.getBlockState(otherPos))) unblocked = false;
-				
-				TileEntity checkedTE = world.getTileEntity(otherPos);
-				if(checkedTE != null && checkedTE instanceof TileEntityAuraNode) {
-					this.setConnection(whichWay, otherPos, unblocked);
-					((TileEntityAuraNode) checkedTE).setConnection(whichWay.getOpposite(), this.pos, unblocked);
-					break;
-				}
-			}
-		}
-	}
-	
-	//Helpers which should go in the capability
-	private boolean canConnectionPassThrough(IBlockState state) {
-		return state.getMaterial().isReplaceable() || state.getMaterial().isLiquid() && 
-						!(state.isOpaqueCube() || state.isFullCube() || state.isFullBlock());
+		auraConnectCap.rescanForConnections(world, pos);
 	}
 	
 	private void resetAllConnections() {
-		connections.clear();
-	}
-	
-	private void setConnection(EnumFacing key, BlockPos otherPos, boolean unblocked) {
-		ConnectionData toAdd = new ConnectionData(otherPos, unblocked);
-		if(toAdd.equals(connections.get(key))) return;
-		
-		connections.put(key, new ConnectionData(otherPos, unblocked));
-	}
-	
-	private ConcurrentHashMap<EnumFacing, ConnectionData> getConnections() {
-		return connections;
+		auraConnectCap.eraseConnections();
 	}
 	
 	//todo: dirty flag this maybe?
 	//because it will only ever update when the connection map does, if then
+	//todo: does this belong in the capability? probably right?
 	public ConcurrentHashMap<EnumFacing, ConnectionData> getActiveConnections() {
-		//i want functional language
-		ConcurrentHashMap<EnumFacing, ConnectionData> newConnections = new ConcurrentHashMap<>();
-		for(Map.Entry<EnumFacing, ConnectionData> pair : connections.entrySet()) {
+		// This should work but doesn't...
+		/*
+		return auraConnectCap.getConnectionMap()
+						.entrySet().stream()
+						.filter(entry -> entry.getValue().unblocked)
+						.collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
+		*/
+		
+		ConcurrentHashMap<EnumFacing, ConnectionData> blah = new ConcurrentHashMap<>();
+		for(Map.Entry<EnumFacing, ConnectionData> pair : auraConnectCap.getConnectionMap().entrySet()) {
 			if(pair.getValue().unblocked) {
-				newConnections.put(pair.getKey(), pair.getValue());
+				blah.put(pair.getKey(), pair.getValue());
 			}
 		}
-		return newConnections;
+		return blah;
 	}
 	
 	//Events called from blockauranode
 	public void onActivated(World w, EntityPlayer player) {
 		//CascadeUtils.sendChatMessage(player, world.isRemote ? "Hi i'm the client" : "I'm the server");
 		
-		if(world.isRemote) CascadeUtils.sendChatMessage(player, "My name Jeff!!!!! xD");
-		for(Map.Entry<EnumFacing, ConnectionData> pair : connections.entrySet()) {
-			CascadeUtils.sendChatMessage(player,
-							(world.isRemote ? "C " + TextFormatting.GREEN : "S " + TextFormatting.AQUA) +
-							"Side: " + pair.getKey() + " " + pair.getValue().toNiceString());
-		}
+		auraConnectCap.lalalaDebugPrintOwoWhatsThis(w, player);
 	}
 	
 	public void onPlaceBlock() {
@@ -125,100 +105,31 @@ public class TileEntityAuraNode extends CascadeTileEntity implements ITickable {
 	}
 	
 	public void onBreakBlock() {
-		world.removeTileEntity(pos);
-		
-		for(Map.Entry<EnumFacing, ConnectionData> pair : connections.entrySet()) {
-			TileEntityAuraNode other = (TileEntityAuraNode) world.getTileEntity(pos);
-			if(other == null) continue;
-			other.resetAllConnections();
-			other.scanForConnections();
-		}
+		world.removeTileEntity(pos); //This is stupid and dangerous
+		auraConnectCap.onRemoved(world, pos);
 	}
 	
 	//NBT save load junk
 	private static final String AURA_KEY = "Aura";
 	private static final String ABSORPTION_COOLDOWN_KEY = "AuraCooldown";
 	private static final String CONNECTIONS_LIST_KEY = "Connections";
-	private static final String CONNECTION_DATA_KEY = "Data";
-	private static final String FACING_KEY = "Facing";
 	
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
-		nbt.setTag(AURA_KEY, auraCapImpl.writeNBT());
+		nbt.setTag(AURA_KEY, auraHolderCap.writeNBT());
 		nbt.setByte(ABSORPTION_COOLDOWN_KEY, absorptionCooldown);
-		NBTTagList nbtlist = new NBTTagList();
-		for(Map.Entry<EnumFacing, ConnectionData> pair : connections.entrySet()) {
-			EnumFacing whichWay = pair.getKey();
-			ConnectionData data = pair.getValue();
-			
-			NBTTagCompound item = new NBTTagCompound();
-			item.setInteger(FACING_KEY, whichWay.getIndex());
-			item.setTag(CONNECTION_DATA_KEY, data.toNBTCompound());
-			
-			nbtlist.appendTag(item);
-		}
-		nbt.setTag(CONNECTIONS_LIST_KEY, nbtlist);
+		nbt.setTag(CONNECTIONS_LIST_KEY, auraConnectCap.writeNBT());
 		
 		return super.writeToNBT(nbt);
 	}
 	
 	@Override
 	public void readFromNBT(NBTTagCompound nbt) {
-		auraCapImpl.readNBT(nbt.getTagList(AURA_KEY, 10)); //The 10 is some magic number idk.
+		auraHolderCap.readNBT(nbt.getTagList(AURA_KEY, 10)); //The 10 is some magic number idk.
 		absorptionCooldown = nbt.getByte(ABSORPTION_COOLDOWN_KEY);
-		
-		connections.clear();
-		NBTTagList conlist = nbt.getTagList(CONNECTIONS_LIST_KEY, 10);
-		for(NBTBase e : conlist) {
-			NBTTagCompound entry = (NBTTagCompound) e;
-			
-			EnumFacing whichWay = EnumFacing.values()[entry.getInteger(FACING_KEY)];
-			ConnectionData data = new ConnectionData(entry);
-			
-			//todo: should i go through an "official channel" or just write directly?
-			//I think this is better, honestly: the getters and setters made more sense
-			//when I was using more than just a very simple k/v hashmap
-			//But when a getter is just a wrapper for the hashmap's getter...? no.
-			connections.put(whichWay, data);
-		}
+		Cascade.LOGGER.info(nbt.getTagList(CONNECTIONS_LIST_KEY,10));
+		auraConnectCap.readNBT(nbt.getTagList(CONNECTIONS_LIST_KEY, 10));
 		
 		super.readFromNBT(nbt);
-	}
-	
-	public class ConnectionData {
-		public BlockPos position;
-		public boolean unblocked;
-		
-		public ConnectionData(BlockPos position_, boolean unblocked_) {
-			position = position_;
-			unblocked = unblocked_;
-		}
-		
-		public ConnectionData(NBTTagCompound fromNBT) {
-			position = new BlockPos(
-							fromNBT.getInteger("x"),
-							fromNBT.getInteger("y"),
-							fromNBT.getInteger("z")
-			);
-			unblocked = fromNBT.getBoolean("Unblocked");
-		}
-		
-		public NBTTagCompound toNBTCompound() {
-			NBTTagCompound blah = new NBTTagCompound();
-			blah.setInteger("x", position.getX());
-			blah.setInteger("y", position.getY());
-			blah.setInteger("z", position.getZ());
-			blah.setBoolean("Unblocked", unblocked);
-			return blah;
-		}
-		
-		String toNiceString() {
-			return "Pos: " + position.getX() + " " + position.getY() + " " + position.getZ() + " " + (unblocked ? " Unblocked" : " Blocked");
-		}
-		
-		boolean equals(ConnectionData other) {
-			if(other == null) return false;
-			return position.equals(other.position) && (unblocked == other.unblocked);
-		}
 	}
 }

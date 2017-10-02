@@ -10,6 +10,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import org.lwjgl.opengl.GL11;
+import quaternary.cascade2.cap.aura.connection.ConnectionData;
 import quaternary.cascade2.tile.node.TileEntityAuraNode;
 import quaternary.cascade2.util.CascadeRenderUtils;
 
@@ -37,7 +38,7 @@ public class TESRAuraNode extends TileEntitySpecialRenderer<TileEntityAuraNode> 
 		
 		buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR_NORMAL);
 		
-		for(Map.Entry<EnumFacing, TileEntityAuraNode.ConnectionData> pair : te.getActiveConnections().entrySet()) {
+		for(Map.Entry<EnumFacing, ConnectionData> pair : te.getActiveConnections().entrySet()) {
 			EnumFacing whichWay = pair.getKey();
 			//I don't want to render connections 2 times from 2 nodes
 			if(whichWay.getAxisDirection() == EnumFacing.AxisDirection.POSITIVE) {
