@@ -3,14 +3,14 @@ package quaternary.cascade2.block;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.item.ItemBlock;
-import quaternary.cascade2.Cascade;
+import quaternary.cascade2.Halogen;
 
-public class CascadeBlock extends Block {
+public class HaloBlock extends Block {
 	
 	ItemBlock itemForm;
 	String name;
 	
-	public CascadeBlock(String jeff, Material mat) {
+	public HaloBlock(String jeff, Material mat) {
 		super(mat);
 		
 		name = jeff; //My name jeff
@@ -18,7 +18,7 @@ public class CascadeBlock extends Block {
 		setRegistryName(name);
 		setUnlocalizedName(name);
 		
-		setCreativeTab(Cascade.CREATIVE_TAB);
+		setCreativeTab(Halogen.CREATIVE_TAB);
 		
 		itemForm = new ItemBlock(this);
 		itemForm.setRegistryName(name);
@@ -31,6 +31,6 @@ public class CascadeBlock extends Block {
 	
 	public void registerItemBlockModel() {
 		//todo: handle data values
-		Cascade.PROXY.registerItemModel(itemForm);
+		Halogen.PROXY.registerItemModel(itemForm);
 	}
 }

@@ -6,4 +6,4 @@ tile.node_white.name=White Aura Node
 item.aura_crystal.0.name=White Aura
 
 #Creative Tab
-itemGroup.cascade2=Cascade
+itemGroup.halogen=Halogen

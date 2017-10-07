@@ -3,33 +3,27 @@ package quaternary.cascade2;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import quaternary.cascade2.aura.type.CascadeAuraTypes;
 import quaternary.cascade2.block.ModBlocks;
-import quaternary.cascade2.cap.CascadeCaps;
+import quaternary.cascade2.cap.HaloCaps;
 import quaternary.cascade2.item.ModItems;
 import quaternary.cascade2.misc.CascadeCreativeTab;
-import quaternary.cascade2.net.ModPackets;
 import quaternary.cascade2.proxy.CommonProxy;
-import quaternary.cascade2.util.CascadeUtilEvents;
 
-@Mod(modid = Cascade.MODID, name = Cascade.NAME, version = Cascade.VERSION)
-public class Cascade {
-	public static final String MODID = "cascade2";
+@Mod(modid = Halogen.MODID, name = Halogen.NAME, version = Halogen.VERSION)
+public class Halogen {
+	public static final String MODID = "halogen";
 	public static final String NAME = "Halogen";
 	public static final String VERSION = "0";
 	
 	@Mod.Instance
-	public static Cascade INSTANCE = new Cascade();
+	public static Halogen INSTANCE = new Halogen();
 	
 	@SidedProxy(clientSide = "quaternary.cascade2.proxy.ClientProxy",
 					serverSide = "quaternary.cascade2.proxy.CommonProxy")
@@ -38,22 +32,12 @@ public class Cascade {
 	public static final CascadeCreativeTab CREATIVE_TAB = new CascadeCreativeTab();
 	public static final Logger LOGGER = LogManager.getLogger(MODID);
 	
-	public static SimpleNetworkWrapper netwrapper;
-	
 	@Mod.EventHandler
 	@SuppressWarnings("unused")
 	public void preinit(FMLPreInitializationEvent e) {
-		PROXY.registerTESRs();
+		//PROXY.registerTESRs();
 		
-		//todo: Dummy
-		netwrapper = NetworkRegistry.INSTANCE.newSimpleChannel(MODID);
-		ModPackets.registerPackets(netwrapper);
-		
-		CascadeAuraTypes.registerAuraTypes();
-		CascadeCaps.registerCapabilities();
-		
-		//todo: Useless
-		MinecraftForge.EVENT_BUS.register(CascadeUtilEvents.class);
+		HaloCaps.registerCaps();
 	}
 	
 	@Mod.EventBusSubscriber

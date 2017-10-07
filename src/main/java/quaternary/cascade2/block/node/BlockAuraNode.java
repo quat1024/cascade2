@@ -12,10 +12,10 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import quaternary.cascade2.block.CascadeBlockTileEntity;
-import quaternary.cascade2.tile.node.TileEntityAuraNode;
+import quaternary.cascade2.block.HaloBlockTileEntity;
+import quaternary.cascade2.tile.node.TileNode;
 
-public abstract class BlockAuraNode extends CascadeBlockTileEntity<TileEntityAuraNode> {
+public class BlockAuraNode extends HaloBlockTileEntity<TileNode> {
 	static final AxisAlignedBB AABB = new AxisAlignedBB(
 					1 / 4d, 1 / 4d, 1 / 4d,
 					3 / 4d, 3 / 4d, 3 / 4d);
@@ -30,34 +30,34 @@ public abstract class BlockAuraNode extends CascadeBlockTileEntity<TileEntityAur
 	@Override
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		if(hand == EnumHand.OFF_HAND) return false;
-		TileEntityAuraNode myTE = getCastedTileEntity(world, pos);
+		TileNode myTE = (TileNode) world.getTileEntity(pos);
 		if(myTE != null) {
-			myTE.onActivated(world, player);
+			//myTE.onActivated(world, player);
 		}
 		return false;
 	}
 	
 	//messages to tile entity
 	@Override
-	public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
-		getCastedTileEntity(worldIn, pos).onPlaceBlock();
+	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+		//((TileEntityAuraNode) world.getTileEntity(pos)).onPlaceBlock();
 	}
 	
 	@Override
-	public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-		getCastedTileEntity(worldIn, pos).onBreakBlock();
-		super.breakBlock(worldIn, pos, state);
+	public void breakBlock(World world, BlockPos pos, IBlockState state) {
+		//((TileEntityAuraNode) world.getTileEntity(pos)).onBreakBlock();
+		super.breakBlock(world, pos, state);
 	}
 	
 	//tile entity setup
 	@Override
-	public Class<TileEntityAuraNode> getTileEntityClass() {
-		return TileEntityAuraNode.class;
+	public Class<TileNode> getTileEntityClass() {
+		return TileNode.class;
 	}
 	
 	@Override
-	public TileEntityAuraNode createTileEntity(World world, IBlockState state) {
-		return new TileEntityAuraNode();
+	public TileNode createTileEntity(World world, IBlockState state) {
+		return new TileNode();
 	}
 	
 	//block props

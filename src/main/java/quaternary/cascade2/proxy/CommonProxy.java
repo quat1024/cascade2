@@ -10,8 +10,4 @@ public class CommonProxy {
 	public void registerItemModelWithSuffix(Item i, int dv, String name) {
 		//no-op
 	}
-	
-	public void registerTESRs() {
-		//no-op
-	}
 }

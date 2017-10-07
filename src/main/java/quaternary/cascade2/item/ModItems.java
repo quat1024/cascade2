@@ -2,10 +2,10 @@ package quaternary.cascade2.item;
 
 import net.minecraft.item.Item;
 import net.minecraftforge.registries.IForgeRegistry;
-import quaternary.cascade2.Cascade;
+import quaternary.cascade2.Halogen;
 
 public class ModItems {
-	static CascadeItem[] items = {
+	static HaloItem[] items = {
 					new ItemAuraCrystal()
 	};
 	
@@ -16,11 +16,11 @@ public class ModItems {
 	public static void registerItemModels() {
 		//todo: handle data values properly instead of just assuming there aren't any
 		//for example aura crystal items should DEFFO have a dv
-		for(CascadeItem i : items) {
+		for(HaloItem i : items) {
 			if(i.getHasSubtypes()) {
 				i.registerSubtypeModels();
 			} else {
-				Cascade.PROXY.registerItemModel(i);
+				Halogen.PROXY.registerItemModel(i);
 			}
 		}
 	}

@@ -1,6 +1,6 @@
 {
   "parent": "item/handheld",
   "textures": {
-    "layer0": "cascade2:item/crystal/crystal_white"
+    "layer0": "halogen:item/crystal/crystal_white"
   }
 }

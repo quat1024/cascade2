@@ -9,7 +9,7 @@ public abstract class AuraType {
 	
 	abstract int getCrystalDamage();
 	
-	@GameRegistry.ObjectHolder("cascade2:aura_crystal")
+	@GameRegistry.ObjectHolder("halogen:aura_crystal")
 	public static final Item AURA_CRYSTAL_ITEM = null;
 	
 	public ItemStack getCrystalItemStack() {

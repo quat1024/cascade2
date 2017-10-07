@@ -1,18 +1,18 @@
 package quaternary.cascade2.item;
 
 import net.minecraft.item.Item;
-import quaternary.cascade2.Cascade;
+import quaternary.cascade2.Halogen;
 
-public class CascadeItem extends Item {
+public class HaloItem extends Item {
 	
 	String name;
 	
-	public CascadeItem(String jeff) {
+	public HaloItem(String jeff) {
 		name = jeff;
 		
 		setRegistryName(name);
 		setUnlocalizedName(name);
-		setCreativeTab(Cascade.CREATIVE_TAB);
+		setCreativeTab(Halogen.CREATIVE_TAB);
 	}
 	
 	//Called in ModItems, override iff using subtypes
