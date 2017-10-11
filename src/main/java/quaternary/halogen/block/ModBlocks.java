@@ -4,11 +4,11 @@ import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
-import quaternary.halogen.block.node.BlockAuraNode;
+import quaternary.halogen.block.node.BlockNode;
 
 public class ModBlocks {
 	public static final HaloBlock[] blocks = {
-					new BlockAuraNode("node_white")
+					new BlockNode("node_white")
 	};
 	
 	public static void registerBlocks(IForgeRegistry<Block> reg) {

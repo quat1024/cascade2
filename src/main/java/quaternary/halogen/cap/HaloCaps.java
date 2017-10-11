@@ -3,12 +3,13 @@ package quaternary.halogen.cap;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityManager;
 
 import javax.annotation.Nullable;
 
 public class HaloCaps {
 	public static void registerCaps() {
-		//Do the thing!
+		CapabilityManager.INSTANCE.register(IAuraStorage.class, new DefaultIStorage<IAuraStorage>(), AuraStorageCap.class);
 	}
 	
 	static class DefaultIStorage<T extends ISaveLoadCapability> implements Capability.IStorage<T> {

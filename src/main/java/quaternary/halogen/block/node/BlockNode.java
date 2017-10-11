@@ -15,26 +15,15 @@ import net.minecraft.world.World;
 import quaternary.halogen.block.HaloBlockTileEntity;
 import quaternary.halogen.tile.node.TileNode;
 
-public class BlockAuraNode extends HaloBlockTileEntity<TileNode> {
+public class BlockNode extends HaloBlockTileEntity<TileNode> {
 	static final AxisAlignedBB AABB = new AxisAlignedBB(
 					1 / 4d, 1 / 4d, 1 / 4d,
 					3 / 4d, 3 / 4d, 3 / 4d);
 	
-	public BlockAuraNode(String jeff) {
+	public BlockNode(String jeff) {
 		super(jeff, Material.ROCK); //Todo: real material choice
 		
 		setLightOpacity(0);
-	}
-	
-	//debug only
-	@Override
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		if(hand == EnumHand.OFF_HAND) return false;
-		TileNode myTE = (TileNode) world.getTileEntity(pos);
-		if(myTE != null) {
-			//myTE.onActivated(world, player);
-		}
-		return false;
 	}
 	
 	//messages to tile entity
@@ -49,7 +38,7 @@ public class BlockAuraNode extends HaloBlockTileEntity<TileNode> {
 		super.breakBlock(world, pos, state);
 	}
 	
-	//tile entity setup
+	//tile entity setup (called from modblocks)
 	@Override
 	public Class<TileNode> getTileEntityClass() {
 		return TileNode.class;
@@ -79,10 +68,5 @@ public class BlockAuraNode extends HaloBlockTileEntity<TileNode> {
 	@Override
 	public boolean isPassable(IBlockAccess blah, BlockPos blahblah) {
 		return false;
-	}
-	
-	@Override
-	public BlockFaceShape getBlockFaceShape(IBlockAccess world, IBlockState state, BlockPos pos, EnumFacing facing) {
-		return BlockFaceShape.UNDEFINED;
 	}
 }
