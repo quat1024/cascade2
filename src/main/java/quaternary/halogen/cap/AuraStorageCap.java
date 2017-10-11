@@ -72,9 +72,7 @@ public class AuraStorageCap implements IAuraStorage, ISaveLoadCapability {
 			NBTTagList list = (NBTTagList) nbt;
 			for(int i = 0; i < list.tagCount(); i++) {
 				NBTTagCompound e = (NBTTagCompound) list.get(i);
-				storageMap.put(
-								AuraTypes.fromString(e.getString("Type")),
-								e.getInteger("Amt")
+				storageMap.put(AuraTypes.fromString(e.getString("Type")), e.getInteger("Amt")
 				);
 			}
 		} else {
