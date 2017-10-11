@@ -1,10 +1,10 @@
-package quaternary.cascade2.misc;
+package quaternary.halogen.misc;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import quaternary.cascade2.Halogen;
+import quaternary.halogen.Halogen;
 
 public class CascadeCreativeTab extends CreativeTabs {
 	public CascadeCreativeTab() {

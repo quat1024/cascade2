@@ -1,10 +1,10 @@
-package quaternary.cascade2.block;
+package quaternary.halogen.block;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
-import quaternary.cascade2.block.node.BlockAuraNode;
+import quaternary.halogen.block.node.BlockAuraNode;
 
 public class ModBlocks {
 	public static final HaloBlock[] blocks = {

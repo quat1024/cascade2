@@ -1,8 +1,8 @@
-package quaternary.cascade2.item;
+package quaternary.halogen.item;
 
 import net.minecraft.item.Item;
 import net.minecraftforge.registries.IForgeRegistry;
-import quaternary.cascade2.Halogen;
+import quaternary.halogen.Halogen;
 
 public class ModItems {
 	static HaloItem[] items = {

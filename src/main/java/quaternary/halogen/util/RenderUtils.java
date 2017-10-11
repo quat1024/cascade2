@@ -1,4 +1,4 @@
-package quaternary.cascade2.util;
+package quaternary.halogen.util;
 
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.util.EnumFacing;

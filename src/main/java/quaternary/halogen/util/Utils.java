@@ -1,4 +1,4 @@
-package quaternary.cascade2.util;
+package quaternary.halogen.util;
 
 public class Utils {
 	//Copy of the one from MathHelper, but not clientside only (WHY IS IT SIDEONLY???)

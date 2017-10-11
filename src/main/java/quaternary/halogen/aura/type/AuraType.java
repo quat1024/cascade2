@@ -1,4 +1,4 @@
-package quaternary.cascade2.aura.type;
+package quaternary.halogen.aura.type;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;

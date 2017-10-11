@@ -1,4 +1,4 @@
-package quaternary.cascade2.block;
+package quaternary.halogen.block;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;

@@ -1,9 +1,9 @@
-package quaternary.cascade2.item;
+package quaternary.halogen.item;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
-import quaternary.cascade2.Halogen;
+import quaternary.halogen.Halogen;
 
 public class ItemAuraCrystal extends HaloItem {
 	//TODO move this int to aura system class

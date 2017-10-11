@@ -1,9 +1,9 @@
-package quaternary.cascade2.block;
+package quaternary.halogen.block;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.item.ItemBlock;
-import quaternary.cascade2.Halogen;
+import quaternary.halogen.Halogen;
 
 public class HaloBlock extends Block {
 	

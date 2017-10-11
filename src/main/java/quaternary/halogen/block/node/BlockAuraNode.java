@@ -1,4 +1,4 @@
-package quaternary.cascade2.block.node;
+package quaternary.halogen.block.node;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockFaceShape;
@@ -12,8 +12,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import quaternary.cascade2.block.HaloBlockTileEntity;
-import quaternary.cascade2.tile.node.TileNode;
+import quaternary.halogen.block.HaloBlockTileEntity;
+import quaternary.halogen.tile.node.TileNode;
 
 public class BlockAuraNode extends HaloBlockTileEntity<TileNode> {
 	static final AxisAlignedBB AABB = new AxisAlignedBB(

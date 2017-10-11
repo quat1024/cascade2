@@ -1,4 +1,4 @@
-package quaternary.cascade2.cap;
+package quaternary.halogen.cap;
 
 import net.minecraft.nbt.NBTBase;
 

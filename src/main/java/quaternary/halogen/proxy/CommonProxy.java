@@ -1,4 +1,4 @@
-package quaternary.cascade2.proxy;
+package quaternary.halogen.proxy;
 
 import net.minecraft.item.Item;
 

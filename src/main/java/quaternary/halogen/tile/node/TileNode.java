@@ -1,4 +1,4 @@
-package quaternary.cascade2.tile.node;
+package quaternary.halogen.tile.node;
 // Comment with space after the slashes to appease Nerxit.
 
 import net.minecraft.tileentity.TileEntity;

@@ -1,4 +1,4 @@
-package quaternary.cascade2;
+package quaternary.halogen;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -10,11 +10,11 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import quaternary.cascade2.block.ModBlocks;
-import quaternary.cascade2.cap.HaloCaps;
-import quaternary.cascade2.item.ModItems;
-import quaternary.cascade2.misc.CascadeCreativeTab;
-import quaternary.cascade2.proxy.CommonProxy;
+import quaternary.halogen.block.ModBlocks;
+import quaternary.halogen.cap.HaloCaps;
+import quaternary.halogen.item.ModItems;
+import quaternary.halogen.misc.CascadeCreativeTab;
+import quaternary.halogen.proxy.CommonProxy;
 
 @Mod(modid = Halogen.MODID, name = Halogen.NAME, version = Halogen.VERSION)
 public class Halogen {
@@ -25,8 +25,8 @@ public class Halogen {
 	@Mod.Instance
 	public static Halogen INSTANCE = new Halogen();
 	
-	@SidedProxy(clientSide = "quaternary.cascade2.proxy.ClientProxy",
-					serverSide = "quaternary.cascade2.proxy.CommonProxy")
+	@SidedProxy(clientSide = "quaternary.halogen.proxy.ClientProxy",
+					serverSide = "quaternary.halogen.proxy.CommonProxy")
 	public static CommonProxy PROXY;
 	
 	public static final CascadeCreativeTab CREATIVE_TAB = new CascadeCreativeTab();
