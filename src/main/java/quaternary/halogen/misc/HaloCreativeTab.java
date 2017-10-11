@@ -6,8 +6,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import quaternary.halogen.Halogen;
 
-public class CascadeCreativeTab extends CreativeTabs {
-	public CascadeCreativeTab() {
+public class HaloCreativeTab extends CreativeTabs {
+	public HaloCreativeTab() {
 		super(Halogen.MODID);
 	}
 	

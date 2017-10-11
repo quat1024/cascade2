@@ -13,7 +13,7 @@ import org.apache.logging.log4j.Logger;
 import quaternary.halogen.block.ModBlocks;
 import quaternary.halogen.cap.HaloCaps;
 import quaternary.halogen.item.ModItems;
-import quaternary.halogen.misc.CascadeCreativeTab;
+import quaternary.halogen.misc.HaloCreativeTab;
 import quaternary.halogen.proxy.CommonProxy;
 
 @Mod(modid = Halogen.MODID, name = Halogen.NAME, version = Halogen.VERSION)
@@ -26,10 +26,10 @@ public class Halogen {
 	public static Halogen INSTANCE = new Halogen();
 	
 	@SidedProxy(clientSide = "quaternary.halogen.proxy.ClientProxy",
-					serverSide = "quaternary.halogen.proxy.CommonProxy")
+	            serverSide = "quaternary.halogen.proxy.CommonProxy")
 	public static CommonProxy PROXY;
 	
-	public static final CascadeCreativeTab CREATIVE_TAB = new CascadeCreativeTab();
+	public static final HaloCreativeTab CREATIVE_TAB = new HaloCreativeTab();
 	public static final Logger LOGGER = LogManager.getLogger(MODID);
 	
 	@Mod.EventHandler
