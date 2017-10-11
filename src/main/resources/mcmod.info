@@ -1,14 +1,14 @@
 [
 {
-  "modid": "cascade2",
-  "name": "Cascade",
-  "description": "A remix of Aura Cascade? Is that a thing I can do? You bet!",
+  "modid": "halogen",
+  "name": "Halogen",
+  "description": "A remix of Aura Cascade? Is that a thing I can do?",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",
   "authorList": ["quaternary"],
-  "credits": "pixlepix for creating Aura Cascade - you rock!",
+  "credits": "pixlepix for creating Aura Cascade",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []
