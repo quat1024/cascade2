@@ -9,6 +9,6 @@ public interface IAuraEmitter extends ISaveLoadCapability {
 	void setEligible(boolean canEmit);
 	boolean isEligible();
 	
-	boolean canSendAura(AuraType type, int amt, IAuraReceiver reciever);
-	void sendAura(AuraType type, int amt, IAuraReceiver receiver);
+	boolean canEmitAura(AuraType type, int amt, IAuraReceiver reciever);
+	void emitAura(AuraType type, int amt, IAuraReceiver receiver);
 }

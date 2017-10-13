@@ -32,7 +32,7 @@ public class AuraEmitterCap implements IAuraEmitter {
 	}
 	
 	@Override
-	public boolean canSendAura(AuraType type, int amt, IAuraReceiver reciever) {
+	public boolean canEmitAura(AuraType type, int amt, IAuraReceiver reciever) {
 		return
 			isEligible() &&
 			!(reciever == null) &&
@@ -42,7 +42,7 @@ public class AuraEmitterCap implements IAuraEmitter {
 	}
 	
 	@Override
-	public void sendAura(AuraType type, int amt, IAuraReceiver receiver) {
+	public void emitAura(AuraType type, int amt, IAuraReceiver receiver) {
 		storage.removeAura(type, amt);
 		receiver.receiveAura(type, amt, this);
 	}
