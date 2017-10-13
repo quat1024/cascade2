@@ -8,4 +8,6 @@ public interface IAuraStorage extends ISaveLoadCapability {
 	
 	void addAura(AuraType type, int amount, boolean safe);
 	void removeAura(AuraType type, int amount, boolean safe);
+	
+	int getAura(AuraType type);
 }

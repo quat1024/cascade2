@@ -45,6 +45,11 @@ public class AuraStorageCap implements IAuraStorage, ISaveLoadCapability {
 		storageMap.put(type, storageMap.get(type) - amount);
 	}
 	
+	@Override
+	public int getAura(AuraType type) {
+		return storageMap.getOrDefault(type, 0);
+	}
+	
 	private int sumAura() {
 		int blah = 0;
 		for(Map.Entry<AuraType, Integer> entry : storageMap.entrySet()) {

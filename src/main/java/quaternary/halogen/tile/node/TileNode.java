@@ -17,6 +17,7 @@ import quaternary.halogen.aura.type.AuraTypes;
 import quaternary.halogen.cap.AuraStorageCap;
 import quaternary.halogen.item.ItemAuraCrystal;
 import quaternary.halogen.util.DisgustingNumbers;
+import quaternary.halogen.util.RenderUtils;
 
 import java.util.List;
 
@@ -42,6 +43,16 @@ public class TileNode extends TileEntity implements ITickable {
 						storageCap.addAura(AuraTypes.NORMAL, 50, false);
 						auraAbsorptionCooldown = 20;
 						
+						Halogen.LOGGER.info("Hi i'm a " + (world.isRemote ? "client" : "server") + " and I think there's " + storageCap.getAura(AuraTypes.NORMAL) + " aura in the thingie");
+						
+						//clientside only
+						if(world.isRemote) {
+							Vec3d particlePos = ent.getPositionVector().addVector(.1,.1,.1);
+							Halogen.LOGGER.info("Bepis");
+							RenderUtils.clientsideParticle(EnumParticleTypes.ITEM_CRACK, particlePos, .3, 10, Item.getIdFromItem(stack.getItem()), stack.getItemDamage());
+						}
+						
+						/*
 						//TODO: sound effect?
 						if(world instanceof WorldServer) {
 							WorldServer bepsi = (WorldServer) world;
@@ -49,6 +60,7 @@ public class TileNode extends TileEntity implements ITickable {
 							Halogen.LOGGER.info("Item id " + Item.getIdFromItem(stack.getItem()));
 							bepsi.spawnParticle(EnumParticleTypes.ITEM_CRACK, false, particlePos.x, particlePos.y, particlePos.z, 10, 0, 0, 0, 0.05d, Item.getIdFromItem(stack.getItem()));
 						}
+						*/
 						
 						stack.shrink(1);
 						break;

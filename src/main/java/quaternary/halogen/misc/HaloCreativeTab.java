@@ -5,16 +5,17 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import quaternary.halogen.Halogen;
+import quaternary.halogen.item.ModItems;
 
 public class HaloCreativeTab extends CreativeTabs {
 	public HaloCreativeTab() {
 		super(Halogen.MODID);
 	}
 	
-	@GameRegistry.ObjectHolder("cascade2:aura_crystal")
+	@GameRegistry.ObjectHolder("halogen:aura_crystal")
 	public static final Item auraCrystalItem = null;
 	
 	public ItemStack getTabIconItem() {
-		return new ItemStack(auraCrystalItem);
+		return new ItemStack(auraCrystalItem, 1, 0);
 	}
 }
