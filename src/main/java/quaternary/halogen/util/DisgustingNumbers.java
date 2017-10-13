@@ -29,10 +29,11 @@ package quaternary.halogen.util;
  * 
  * 
  * 
- * 
+ *   I SAID NO PEEKING.
  * 
  * 
  * */
 public class DisgustingNumbers {
 	public static final int NODE_MAX_AURA = 1000;
+	public static final int AURA_CRYSTAL_CONTAINED_AURA = 50;
 }

@@ -1,10 +1,12 @@
-package quaternary.halogen.cap;
+package quaternary.halogen.cap.aura.impl;
 
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import quaternary.halogen.aura.type.AuraType;
 import quaternary.halogen.aura.type.AuraTypes;
+import quaternary.halogen.cap.ISaveLoadCapability;
+import quaternary.halogen.cap.aura.IAuraStorage;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +21,7 @@ public class AuraStorageCap implements IAuraStorage, ISaveLoadCapability {
 	
 	@Override
 	public boolean canAddAura(AuraType type, int amount) {
-		return sumAura() + amount <= max;
+		return getTotalAura() + amount <= max;
 	}
 	
 	@Override
@@ -28,21 +30,23 @@ public class AuraStorageCap implements IAuraStorage, ISaveLoadCapability {
 	}
 	
 	@Override
-	public void addAura(AuraType type, int amount, boolean safe) {
-		if(safe && !canAddAura(type, amount)) return;
+	public boolean addAura(AuraType type, int amount) {
+		if(!canAddAura(type, amount)) return false;
 		
 		if(storageMap.containsKey(type)) {
 			storageMap.put(type, storageMap.get(type) + amount);
 		} else {
 			storageMap.put(type, amount);
 		}
+		return true;
 	}
 	
 	@Override
-	public void removeAura(AuraType type, int amount, boolean safe) {
-		if(safe && !canRemoveAura(type, amount)) return;
+	public boolean removeAura(AuraType type, int amount) {
+		if(!canRemoveAura(type, amount)) return false;
 		
 		storageMap.put(type, storageMap.get(type) - amount);
+		return true;
 	}
 	
 	@Override
@@ -50,7 +54,8 @@ public class AuraStorageCap implements IAuraStorage, ISaveLoadCapability {
 		return storageMap.getOrDefault(type, 0);
 	}
 	
-	private int sumAura() {
+	@Override
+	public int getTotalAura() {
 		int blah = 0;
 		for(Map.Entry<AuraType, Integer> entry : storageMap.entrySet()) {
 			blah += entry.getValue();

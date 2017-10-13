@@ -11,10 +11,8 @@ import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.WorldServer;
-import quaternary.halogen.Halogen;
 import quaternary.halogen.aura.type.AuraTypes;
-import quaternary.halogen.cap.AuraStorageCap;
+import quaternary.halogen.cap.aura.impl.AuraStorageCap;
 import quaternary.halogen.item.ItemAuraCrystal;
 import quaternary.halogen.util.DisgustingNumbers;
 import quaternary.halogen.util.RenderUtils;
@@ -25,7 +23,7 @@ public class TileNode extends TileEntity implements ITickable {
 	private static final AxisAlignedBB DETECTION_AABB = new AxisAlignedBB(0.2,0.2,0.2,0.8,0.8,0.8);
 	
 	private final AuraStorageCap storageCap = new AuraStorageCap(DisgustingNumbers.NODE_MAX_AURA);
-	int auraAbsorptionCooldown = 0;
+	private int auraAbsorptionCooldown = 0;
 	
 	@Override
 	public void update() {
@@ -38,29 +36,17 @@ public class TileNode extends TileEntity implements ITickable {
 			if(!nearbyItems.isEmpty()) {
 				for(EntityItem ent : nearbyItems) {
 					ItemStack stack = ent.getItem/*Stack*/();
+					
 					//Blah blah blah ask the stack for its contained aura blah blah blah
-					if(storageCap.canAddAura(AuraTypes.NORMAL, 50)) {
-						storageCap.addAura(AuraTypes.NORMAL, 50, false);
+					int containedAura = DisgustingNumbers.AURA_CRYSTAL_CONTAINED_AURA;
+					
+					if(storageCap.addAura(AuraTypes.NORMAL, containedAura)) {
 						auraAbsorptionCooldown = 20;
 						
-						Halogen.LOGGER.info("Hi i'm a " + (world.isRemote ? "client" : "server") + " and I think there's " + storageCap.getAura(AuraTypes.NORMAL) + " aura in the thingie");
-						
-						//clientside only
 						if(world.isRemote) {
 							Vec3d particlePos = ent.getPositionVector().addVector(.1,.1,.1);
-							Halogen.LOGGER.info("Bepis");
 							RenderUtils.clientsideParticle(EnumParticleTypes.ITEM_CRACK, particlePos, .3, 10, Item.getIdFromItem(stack.getItem()), stack.getItemDamage());
 						}
-						
-						/*
-						//TODO: sound effect?
-						if(world instanceof WorldServer) {
-							WorldServer bepsi = (WorldServer) world;
-							Vec3d particlePos = ent.getPositionVector().addVector(.1,.1,.1);
-							Halogen.LOGGER.info("Item id " + Item.getIdFromItem(stack.getItem()));
-							bepsi.spawnParticle(EnumParticleTypes.ITEM_CRACK, false, particlePos.x, particlePos.y, particlePos.z, 10, 0, 0, 0, 0.05d, Item.getIdFromItem(stack.getItem()));
-						}
-						*/
 						
 						stack.shrink(1);
 						break;
