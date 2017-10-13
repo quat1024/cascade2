@@ -64,6 +64,13 @@ public class AuraStorageCap implements IAuraStorage, ISaveLoadCapability {
 	}
 	
 	@Override
+	public boolean hasAura() {
+		if(storageMap.isEmpty()) return false;
+		return getTotalAura() > 0;
+	}
+	
+	
+	@Override
 	public NBTBase writeNBT() {
 		NBTTagList list = new NBTTagList();
 		for(Map.Entry<AuraType, Integer> entry : storageMap.entrySet()) {

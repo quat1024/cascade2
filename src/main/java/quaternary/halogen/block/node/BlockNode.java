@@ -69,4 +69,14 @@ public class BlockNode extends HaloBlockTileEntity<TileNode> {
 	public boolean isPassable(IBlockAccess blah, BlockPos blahblah) {
 		return false;
 	}
+	
+	@Override
+	public boolean hasComparatorInputOverride(IBlockState state) {
+		return true;
+	}
+	
+	@Override
+	public int getComparatorInputOverride(IBlockState state, World world, BlockPos pos) {
+		return ((TileNode) world.getTileEntity(pos)).getComparatorLevel();
+	}
 }

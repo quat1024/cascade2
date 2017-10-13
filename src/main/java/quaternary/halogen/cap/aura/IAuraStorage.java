@@ -13,4 +13,5 @@ public interface IAuraStorage extends ISaveLoadCapability {
 	
 	int getAura(AuraType type);
 	int getTotalAura();
+	boolean hasAura();
 }

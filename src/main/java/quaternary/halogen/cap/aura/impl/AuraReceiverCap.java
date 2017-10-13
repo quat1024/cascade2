@@ -13,6 +13,7 @@ public class AuraReceiverCap implements IAuraReceiver {
 	
 	public AuraReceiverCap(IAuraStorage storage) {
 		this.storage = storage;
+		canReceive = true;
 	}
 	
 	@Override

@@ -3,6 +3,7 @@ package quaternary.halogen.cap;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import quaternary.halogen.cap.aura.IAuraEmitter;
 import quaternary.halogen.cap.aura.IAuraReceiver;
