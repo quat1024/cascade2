@@ -33,9 +33,7 @@ public class AuraReceiverCap implements IAuraReceiver {
 	
 	@Override
 	public boolean canReceiveAura(AuraType type, int amt) {
-		return
-						isEligible() &&
-										storage.canAddAura(type, amt);
+		return isEligible() && storage.canAddAura(type, amt);
 	}
 	
 	@Override
