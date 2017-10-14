@@ -5,7 +5,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import quaternary.halogen.Halogen;
-import quaternary.halogen.item.ModItems;
 
 public class HaloCreativeTab extends CreativeTabs {
 	public HaloCreativeTab() {

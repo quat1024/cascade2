@@ -17,6 +17,6 @@ public class HaloItem extends Item {
 	
 	//Called in ModItems, override iff using subtypes
 	public void registerSubtypeModels() {
-		
+		//lol no
 	}
 }

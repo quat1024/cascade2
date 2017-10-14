@@ -34,12 +34,12 @@ public class AuraEmitterCap implements IAuraEmitter {
 	@Override
 	public boolean canEmitAura(AuraType type, int amt, IAuraReceiver reciever) {
 		return
-			isEligible() &&
-			!(reciever == null) &&
-			reciever.isEligible() &&
-			storage.getTotalAura() > reciever.getStorage().getTotalAura() &&
-			storage.canRemoveAura(type, amt) &&
-			reciever.canReceiveAura(type, amt);
+						isEligible() &&
+										!(reciever == null) &&
+										reciever.isEligible() &&
+										storage.getTotalAura() > reciever.getStorage().getTotalAura() &&
+										storage.canRemoveAura(type, amt) &&
+										reciever.canReceiveAura(type, amt);
 	}
 	
 	@Override

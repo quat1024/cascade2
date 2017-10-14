@@ -14,7 +14,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
-import quaternary.halogen.Halogen;
 import quaternary.halogen.aura.type.AuraTypes;
 import quaternary.halogen.cap.aura.IAuraEmitter;
 import quaternary.halogen.cap.aura.IAuraReceiver;
@@ -25,13 +24,13 @@ import quaternary.halogen.cap.aura.impl.AuraStorageCap;
 import quaternary.halogen.item.ItemAuraCrystal;
 import quaternary.halogen.util.DisgustingNumbers;
 import quaternary.halogen.util.RenderUtils;
-import quaternary.halogen.util.Utils;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
 public class TileNode extends TileEntity implements ITickable {
-	private static final AxisAlignedBB DETECTION_AABB = new AxisAlignedBB(0.2,0.2,0.2,0.8,0.8,0.8);
+	private static final AxisAlignedBB DETECTION_AABB = new AxisAlignedBB(0.2, 0.2, 0.2, 0.8, 0.8, 0.8);
 	
 	private final AuraStorageCap storageCap = new AuraStorageCap(DisgustingNumbers.NODE_MAX_AURA);
 	private final AuraEmitterCap emitterCap = new AuraEmitterCap(storageCap);
@@ -59,7 +58,7 @@ public class TileNode extends TileEntity implements ITickable {
 						auraAbsorptionCooldown = 20;
 						
 						if(world.isRemote) {
-							Vec3d particlePos = ent.getPositionVector().addVector(.1,.1,.1);
+							Vec3d particlePos = ent.getPositionVector().addVector(.1, .1, .1);
 							RenderUtils.clientsideParticle(EnumParticleTypes.ITEM_CRACK, particlePos, .3, 10, Item.getIdFromItem(stack.getItem()), stack.getItemDamage());
 						}
 						
@@ -93,7 +92,7 @@ public class TileNode extends TileEntity implements ITickable {
 	public int getComparatorLevel() {
 		//todo temp
 		return (int) Math.floor(storageCap.getTotalAura() / 1000d * 15);
-	}	
+	}
 	
 	//Caps
 	@CapabilityInject(IAuraStorage.class)
@@ -106,7 +105,7 @@ public class TileNode extends TileEntity implements ITickable {
 	public static Capability<IAuraReceiver> RECEIVER = null;
 	
 	@Override
-	public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
+	public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing) {
 		if(capability == STORAGE || capability == RECEIVER) return true;
 		if(capability == EMITTER) return facing != EnumFacing.UP;
 		
@@ -115,7 +114,8 @@ public class TileNode extends TileEntity implements ITickable {
 	
 	@Nullable
 	@Override
-	public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
+	@SuppressWarnings("unchecked") //Everything is fine!!!!
+	public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
 		if(capability == STORAGE) return (T) storageCap;
 		if(capability == RECEIVER) return (T) receiverCap;
 		if(capability == EMITTER && facing != EnumFacing.UP) return (T) emitterCap;
