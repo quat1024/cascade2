@@ -14,6 +14,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
+import quaternary.halogen.*;
 import quaternary.halogen.aura.type.AuraTypes;
 import quaternary.halogen.cap.aura.IAuraEmitter;
 import quaternary.halogen.cap.aura.IAuraReceiver;
@@ -32,11 +33,17 @@ import java.util.List;
 public class TileNode extends TileEntity implements ITickable {
 	private static final AxisAlignedBB DETECTION_AABB = new AxisAlignedBB(0.2, 0.2, 0.2, 0.8, 0.8, 0.8);
 	
-	private final AuraStorageCap storageCap = new AuraStorageCap(DisgustingNumbers.NODE_MAX_AURA);
-	private final AuraEmitterCap emitterCap = new AuraEmitterCap(storageCap);
-	private final AuraReceiverCap receiverCap = new AuraReceiverCap(storageCap);
+	private AuraStorageCap storageCap;
+	private AuraEmitterCap emitterCap;
+	private AuraReceiverCap receiverCap;
 	
 	private int auraAbsorptionCooldown = 0;
+	
+	public TileNode() {
+		storageCap = new AuraStorageCap(DisgustingNumbers.NODE_MAX_AURA);
+		emitterCap = new AuraEmitterCap(storageCap);
+		receiverCap = new AuraReceiverCap(storageCap);
+	}
 	
 	@Override
 	public void update() {
@@ -55,7 +62,7 @@ public class TileNode extends TileEntity implements ITickable {
 					int containedAura = DisgustingNumbers.AURA_CRYSTAL_CONTAINED_AURA;
 					
 					if(storageCap.addAura(AuraTypes.NORMAL, containedAura)) {
-						auraAbsorptionCooldown = 20;
+						auraAbsorptionCooldown = 10;
 						
 						if(world.isRemote) {
 							Vec3d particlePos = ent.getPositionVector().addVector(.1, .1, .1);
@@ -70,17 +77,16 @@ public class TileNode extends TileEntity implements ITickable {
 		}
 		
 		//Temp af
-		if(emitterCap.isEligible() && world.getTotalWorldTime() % 15 == 0) {
+		if(!world.isRemote && emitterCap.isEligible() && world.getTotalWorldTime() % 15 == 0) {
 			for(EnumFacing whichWay : EnumFacing.values()) {
+				if(whichWay == EnumFacing.UP) continue; //quality code
 				for(int dist = 1; dist < 16; dist++) {
 					TileEntity bepsi = world.getTileEntity(pos.offset(whichWay, dist));
 					if(bepsi == null) continue;
 					if(bepsi.hasCapability(RECEIVER, whichWay.getOpposite())) {
 						IAuraReceiver otherCap = bepsi.getCapability(RECEIVER, whichWay.getOpposite());
-						if(emitterCap.canEmitAura(AuraTypes.NORMAL, 10, otherCap)) {
-							emitterCap.emitAura(AuraTypes.NORMAL, 10, otherCap);
-						}
-						
+						emitterCap.emitAura(AuraTypes.NORMAL, 20, otherCap);
+						world.updateComparatorOutputLevel(pos, world.getBlockState(pos).getBlock());
 						break;
 					}
 				}

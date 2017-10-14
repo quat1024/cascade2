@@ -1,15 +1,11 @@
 package quaternary.halogen.cap.aura.impl;
 
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import quaternary.halogen.aura.type.AuraType;
-import quaternary.halogen.aura.type.AuraTypes;
-import quaternary.halogen.cap.ISaveLoadCapability;
-import quaternary.halogen.cap.aura.IAuraStorage;
+import net.minecraft.nbt.*;
+import quaternary.halogen.aura.type.*;
+import quaternary.halogen.cap.*;
+import quaternary.halogen.cap.aura.*;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class AuraStorageCap implements IAuraStorage, ISaveLoadCapability {
 	private HashMap<AuraType, Integer> storageMap = new HashMap<>();
@@ -22,11 +18,6 @@ public class AuraStorageCap implements IAuraStorage, ISaveLoadCapability {
 	@Override
 	public boolean canAddAura(AuraType type, int amount) {
 		return getTotalAura() + amount <= max;
-	}
-	
-	@Override
-	public boolean canRemoveAura(AuraType type, int amount) {
-		return storageMap.containsKey(type) && storageMap.get(type) >= amount;
 	}
 	
 	@Override
@@ -50,8 +41,24 @@ public class AuraStorageCap implements IAuraStorage, ISaveLoadCapability {
 	}
 	
 	@Override
+	public boolean canRemoveAura(AuraType type, int amount) {
+		return storageMap.containsKey(type) && storageMap.get(type) >= amount;
+	}
+	
+	@Override
+	public boolean hasAura() {
+		if(storageMap.isEmpty()) return false;
+		return getTotalAura() > 0;
+	}
+	
+	@Override
 	public int getAura(AuraType type) {
 		return storageMap.getOrDefault(type, 0);
+	}
+	
+	@Override
+	public int getMaximumAura() {
+		return max;
 	}
 	
 	@Override
@@ -64,11 +71,16 @@ public class AuraStorageCap implements IAuraStorage, ISaveLoadCapability {
 	}
 	
 	@Override
-	public boolean hasAura() {
-		if(storageMap.isEmpty()) return false;
-		return getTotalAura() > 0;
+	public boolean hasSpace() {
+		return getRemainingSpace() != 0;
 	}
 	
+	@Override
+	public int getRemainingSpace() {
+		return max - getTotalAura();
+	}
+	
+	//////////////
 	
 	@Override
 	public NBTBase writeNBT() {

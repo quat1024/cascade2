@@ -1,10 +1,14 @@
 package quaternary.halogen.cap.aura.impl;
 
 import net.minecraft.nbt.NBTBase;
+import quaternary.halogen.*;
 import quaternary.halogen.aura.type.AuraType;
 import quaternary.halogen.cap.aura.IAuraEmitter;
 import quaternary.halogen.cap.aura.IAuraReceiver;
 import quaternary.halogen.cap.aura.IAuraStorage;
+import quaternary.halogen.util.*;
+
+import javax.annotation.*;
 
 public class AuraEmitterCap implements IAuraEmitter {
 	
@@ -32,18 +36,32 @@ public class AuraEmitterCap implements IAuraEmitter {
 	}
 	
 	@Override
-	public boolean canEmitAura(AuraType type, int amt, IAuraReceiver reciever) {
-		return isEligible() && 
-	         !(reciever == null) && 
-				   reciever.isEligible() &&
-		       storage.getTotalAura() > reciever.getStorage().getTotalAura() &&
-		       storage.canRemoveAura(type, amt) && reciever.canReceiveAura(type, amt);
+	public boolean canEmitAura(AuraType type, int amt, @Nonnull IAuraReceiver receiver) {
+		return doEmitAura(type, amt, receiver, false);
 	}
 	
 	@Override
-	public void emitAura(AuraType type, int amt, IAuraReceiver receiver) {
-		storage.removeAura(type, amt);
-		receiver.receiveAura(type, amt, this);
+	public void emitAura(AuraType type, int amt, @Nonnull IAuraReceiver receiver) {
+		doEmitAura(type, amt, receiver, true);
+	}
+	
+	private boolean doEmitAura(AuraType type, int amt, @Nonnull IAuraReceiver receiver, boolean forReal) {
+		if(isEligible() && receiver.isEligible()) {
+			int auraDifference = storage.getTotalAura() - receiver.getStorage().getTotalAura();
+			if(auraDifference > 1) {
+				int auraAvg = (storage.getTotalAura() + receiver.getStorage().getTotalAura())/2;
+				
+				int toEmit = Utils.min(amt, storage.getTotalAura() - auraAvg, storage.getTotalAura(), receiver.getStorage().getRemainingSpace());
+				if(toEmit != 0) {
+					if(forReal) {
+						storage.removeAura(type, toEmit);
+						receiver.receiveAura(type, toEmit, this);
+					}
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 	
 	@Override

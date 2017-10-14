@@ -1,6 +1,7 @@
 package quaternary.halogen.cap.aura.impl;
 
 import net.minecraft.nbt.NBTBase;
+import quaternary.halogen.*;
 import quaternary.halogen.aura.type.AuraType;
 import quaternary.halogen.cap.aura.IAuraEmitter;
 import quaternary.halogen.cap.aura.IAuraReceiver;
@@ -28,7 +29,7 @@ public class AuraReceiverCap implements IAuraReceiver {
 	
 	@Override
 	public boolean isEligible() {
-		return canReceive;
+		return canReceive && storage.hasSpace();
 	}
 	
 	@Override
