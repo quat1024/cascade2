@@ -1,6 +1,7 @@
 package quaternary.halogen.cap.aura.impl;
 
 import net.minecraft.nbt.NBTBase;
+import net.minecraft.util.math.MathHelper;
 import quaternary.halogen.*;
 import quaternary.halogen.aura.type.AuraType;
 import quaternary.halogen.cap.aura.IAuraEmitter;
@@ -49,15 +50,21 @@ public class AuraEmitterCap implements IAuraEmitter {
 		if(isEligible() && receiver.isEligible()) {
 			int auraDifference = storage.getTotalAura() - receiver.getStorage().getTotalAura();
 			if(auraDifference > 1) {
-				int auraAvg = (storage.getTotalAura() + receiver.getStorage().getTotalAura())/2;
+				int auraAvg = MathHelper.ceil((storage.getTotalAura() + receiver.getStorage().getTotalAura())/2f);
 				
-				int toEmit = Utils.min(amt, storage.getTotalAura() - auraAvg, storage.getTotalAura(), receiver.getStorage().getRemainingSpace());
+				int toEmit = Utils.min(storage.getTotalAura() - auraAvg, amt, storage.getTotalAura(), receiver.getStorage().getRemainingSpace());
+				
 				if(toEmit != 0) {
 					if(forReal) {
 						storage.removeAura(type, toEmit);
 						receiver.receiveAura(type, toEmit, this);
 					}
 					return true;
+				}
+			} else if (auraDifference == 1) {
+				//Special case: if there's only one aura left in me, just remove it
+				if(receiver.getStorage().getTotalAura() == 0) {
+					storage.removeAura(type, 1);
 				}
 			}
 		}

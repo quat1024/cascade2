@@ -2,6 +2,7 @@ package quaternary.halogen.tile.node;
 // Comment with space after the slashes to appease Nerxit.
 //Hey nerxiepoo shut up about my comment habits k
 
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -10,11 +11,10 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ITickable;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
-import quaternary.halogen.*;
+import quaternary.halogen.Halogen;
 import quaternary.halogen.aura.type.AuraTypes;
 import quaternary.halogen.cap.aura.IAuraEmitter;
 import quaternary.halogen.cap.aura.IAuraReceiver;
@@ -69,6 +69,8 @@ public class TileNode extends TileEntity implements ITickable {
 							RenderUtils.clientsideParticle(EnumParticleTypes.ITEM_CRACK, particlePos, .3, 10, Item.getIdFromItem(stack.getItem()), stack.getItemDamage());
 						}
 						
+						world.updateComparatorOutputLevel(pos, world.getBlockState(pos).getBlock());
+						
 						stack.shrink(1);
 						break;
 					}
@@ -77,14 +79,23 @@ public class TileNode extends TileEntity implements ITickable {
 		}
 		
 		//Temp af
+		//put this in another class eventually
 		if(!world.isRemote && emitterCap.isEligible() && world.getTotalWorldTime() % 15 == 0) {
 			for(EnumFacing whichWay : EnumFacing.values()) {
 				if(whichWay == EnumFacing.UP) continue; //quality code
 				for(int dist = 1; dist < 16; dist++) {
-					TileEntity bepsi = world.getTileEntity(pos.offset(whichWay, dist));
+					BlockPos toCheck = pos.offset(whichWay, dist);
+					
+					if(!world.isBlockLoaded(toCheck)) continue;
+					if(!canConnectionPass(world.getBlockState(toCheck))) break;
+					
+					TileEntity bepsi = world.getTileEntity(toCheck);
 					if(bepsi == null) continue;
+					
 					if(bepsi.hasCapability(RECEIVER, whichWay.getOpposite())) {
 						IAuraReceiver otherCap = bepsi.getCapability(RECEIVER, whichWay.getOpposite());
+						if(otherCap == null) continue; //Probably won't happen unless hasCapability is lying.
+						
 						emitterCap.emitAura(AuraTypes.NORMAL, 20, otherCap);
 						world.updateComparatorOutputLevel(pos, world.getBlockState(pos).getBlock());
 						break;
@@ -94,21 +105,29 @@ public class TileNode extends TileEntity implements ITickable {
 		}
 	}
 	
+	//THINGS TO PUT IN ANOTHER CLASS EVENTUALLY LOLOL
+	//REMEMBER HOW WELL THAT WORKED LAST TIME
+	private boolean canConnectionPass(IBlockState state) {
+		return(state.getMaterial().isReplaceable() || state.getMaterial().isLiquid()) || !state.isFullBlock() && !state.isFullCube();
+	}
+	
 	//Properties idk
 	public int getComparatorLevel() {
 		//todo temp
-		return (int) Math.floor(storageCap.getTotalAura() / 1000d * 15);
+		if(storageCap.hasAura()) {
+			return MathHelper.floor(MathHelper.clampedLerp(1, 15, storageCap.getTotalAura() / (double) DisgustingNumbers.NODE_MAX_AURA));
+		} else return 0;
 	}
 	
 	//Caps
 	@CapabilityInject(IAuraStorage.class)
-	public static Capability<IAuraStorage> STORAGE = null;
+	private static Capability<IAuraStorage> STORAGE = null;
 	
 	@CapabilityInject(IAuraEmitter.class)
-	public static Capability<IAuraEmitter> EMITTER = null;
+	private static Capability<IAuraEmitter> EMITTER = null;
 	
 	@CapabilityInject(IAuraReceiver.class)
-	public static Capability<IAuraReceiver> RECEIVER = null;
+	private static Capability<IAuraReceiver> RECEIVER = null;
 	
 	@Override
 	public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing) {
