@@ -1,6 +1,8 @@
-Cascade2
+Halogen
 ========
 
-literally an aura cascade rip off
+Formerly Cascade2. ~~Literally an aura cascade rip off~~Reimagining of Aura Cascade for Minecraft 1.12.
 
-big ideas, zero code to back it up^tm
+Halogen is licensed under the **zlib License**. See LICENSE.md for the full text. It's super short. Pinkie swear.
+
+Note: Anybody complaining that Halogen does not include numbers will be have their suggestions summarily ignored and sternly asked to play another mod.
