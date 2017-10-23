@@ -18,15 +18,14 @@ public class HaloEntities {
 		EntityRegistry.registerModEntity(resify(name), c, prefixify(name), id++, Halogen.INSTANCE, trackingRange, trackingFreq, velocityPackets);
 	}
 	
-	/** The internal resloc this entity is stored under. */
+	/** The internal resloc this entity is stored under.
+	 * Also the name for command blocks.
+	 * Apparently those can include colons now! Who knew. */
 	private static ResourceLocation resify(String in) {
 		return new ResourceLocation(Halogen.MODID , in);
 	}
 	
-	/** The name used in command blocks, to look up localization strings, pretty much everything else. 
-	 * It's important that this string doesn't have any funny characters in it, like :, or else
-	 * it becomes impossible to target my entities with a command block. @e[type=halogen:rift]
-	 * does not parse. */
+	/** The name used to look up localization strings. */
 	private static String prefixify(String in) {
 		return Halogen.MODID + in; //no colon
 	}
