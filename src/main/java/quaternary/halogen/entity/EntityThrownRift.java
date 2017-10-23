@@ -4,7 +4,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
-import quaternary.halogen.Halogen;
 
 public class EntityThrownRift extends EntityThrowable {
 	public EntityThrownRift(World w) {
@@ -19,7 +18,10 @@ public class EntityThrownRift extends EntityThrowable {
 	protected void onImpact(RayTraceResult result) {
 		if(world.isRemote) return;
 		
-		Halogen.LOGGER.info("bup");
+		EntityRift r = new EntityRift(world);
+		r.setPosition(posX, posY, posZ);
+		world.spawnEntity(r);
+		
 		setDead();
 	}
 }

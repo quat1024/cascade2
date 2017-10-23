@@ -5,11 +5,15 @@ import net.minecraftforge.fml.common.registry.EntityRegistry;
 import quaternary.halogen.Halogen;
 
 public class HaloEntities {
+	public static final String THROWN_RIFT_NAME = "thrown_rift";
 	public static final String RIFT_NAME = "rift";
 	
 	public static void registerEntities() {
-		//rift
-		reg(RIFT_NAME, EntityThrownRift.class, 64, 5, true);
+		//thrown rift
+		reg(THROWN_RIFT_NAME, EntityThrownRift.class, 64, 5,  true);
+		//the rift itself
+		//Todo: Make this entity send its own packets, maybe, because it doesn't update regularly.
+		reg(RIFT_NAME,        EntityRift.class,       96, 10, true);
 	}
 	
 	private static int id = 0;

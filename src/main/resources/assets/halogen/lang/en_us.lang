@@ -18,7 +18,8 @@ item.aura_crystal.0.name=White Aura
 ############################# Entities
 
 #Rift
-entity.halogenrift.name=Thrown Rift
+entity.halogenthrown_rift.name=Thrown Rift
+entity.halogenrift.name=Rift
 
 
 
