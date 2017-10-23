@@ -3,13 +3,13 @@ Halogen
 
 Formerly Cascade2.
 
-###What is this thing anyways?
+### What is this thing anyways?
 
 ~~Literally an aura cascade rip off~~Reimagining of Aura Cascade for Minecraft 1.12.
 
 Note: Anybody complaining that Halogen does not include numbers will be have their suggestions summarily ignored and sternly asked to play another mod.
 
-###Design Goals
+### Design Goals
 
 * The parts I like from Botania and Aura Cascade.
 * Hard to automate, but not expensive.
@@ -21,14 +21,14 @@ Note: Anybody complaining that Halogen does not include numbers will be have the
 
 Secondary goal: One commit every day.
 
-###That sounds cool where can I find more information?
+### That sounds cool where can I find more information?
 
 Up your ass
 
-###What have you got planned?
+### What have you got planned?
 
 Idk you can check my [Trello](https://trello.com/b/XZj0nTeh)
 
-###What's the license?
+### What's the license?
 
 Halogen is licensed under the **zlib License**. See LICENSE.md for the full text. It's super short. Pinkie swear.
