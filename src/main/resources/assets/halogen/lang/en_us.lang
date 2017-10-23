@@ -1,9 +1,27 @@
+############################# Blocks
+
 #Aura Nodes
 tile.node_white.name=White Aura Node
 
-#Aura Colors
-#NUMBERS ARE TEMPORARY
+
+
+############################# Items
+
+#Rift
+item.rift.name=Rift
+
+#Aura Crystals
 item.aura_crystal.0.name=White Aura
+
+
+
+############################# Entities
+#Rift
+entity.rift.name=Thrown Rift
+
+
+
+############################# Other shit???
 
 #Creative Tab
 itemGroup.halogen=Halogen

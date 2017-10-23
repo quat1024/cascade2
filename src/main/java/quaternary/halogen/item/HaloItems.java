@@ -4,9 +4,10 @@ import net.minecraft.item.Item;
 import net.minecraftforge.registries.IForgeRegistry;
 import quaternary.halogen.Halogen;
 
-public class ModItems {
+public class HaloItems {
 	static HaloItem[] items = {
-					new ItemAuraCrystal()
+					new ItemAuraCrystal(),
+					new ItemRift()
 	};
 	
 	public static void registerItems(IForgeRegistry<Item> reg) {

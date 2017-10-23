@@ -6,7 +6,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
 import quaternary.halogen.block.node.BlockNode;
 
-public class ModBlocks {
+public class HaloBlocks {
 	public static final HaloBlock[] blocks = {
 					new BlockNode("node_white")
 	};

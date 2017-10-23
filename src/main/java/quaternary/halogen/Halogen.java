@@ -10,9 +10,10 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import quaternary.halogen.block.ModBlocks;
+import quaternary.halogen.block.HaloBlocks;
 import quaternary.halogen.cap.HaloCaps;
-import quaternary.halogen.item.ModItems;
+import quaternary.halogen.entity.HaloEntities;
+import quaternary.halogen.item.HaloItems;
 import quaternary.halogen.misc.HaloCreativeTab;
 import quaternary.halogen.proxy.CommonProxy;
 
@@ -38,6 +39,9 @@ public class Halogen {
 		//PROXY.registerTESRs();
 		
 		HaloCaps.registerCaps();
+		HaloEntities.registerEntities();
+		
+		PROXY.registerEntityRenderers();
 	}
 	
 	@Mod.EventBusSubscriber
@@ -45,21 +49,21 @@ public class Halogen {
 		@SubscribeEvent
 		@SuppressWarnings("unused")
 		public static void blocks(RegistryEvent.Register<Block> e) {
-			ModBlocks.registerBlocks(e.getRegistry());
+			HaloBlocks.registerBlocks(e.getRegistry());
 		}
 		
 		@SubscribeEvent
 		@SuppressWarnings("unused")
 		public static void items(RegistryEvent.Register<Item> e) {
-			ModBlocks.registerItemBlocks(e.getRegistry());
-			ModItems.registerItems(e.getRegistry());
+			HaloBlocks.registerItemBlocks(e.getRegistry());
+			HaloItems.registerItems(e.getRegistry());
 		}
 		
 		@SubscribeEvent
 		@SuppressWarnings("unused")
 		public static void itemModels(ModelRegistryEvent e) {
-			ModBlocks.registerItemBlockModels();
-			ModItems.registerItemModels();
+			HaloBlocks.registerItemBlockModels();
+			HaloItems.registerItemModels();
 		}
 	}
 }
