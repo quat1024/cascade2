@@ -1,5 +1,6 @@
 package quaternary.halogen.entity;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -11,6 +12,11 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import quaternary.halogen.Halogen;
+import quaternary.halogen.recipe.HaloRiftRecipes;
+import quaternary.halogen.recipe.RiftRecipe;
+
+import java.util.Optional;
 
 public class EntityRift extends Entity {
 	//TODO: Don't track the radius, because it's susceptible to cumulative floating point error.
@@ -29,7 +35,7 @@ public class EntityRift extends Entity {
 	@Override
 	protected void entityInit() {
 		dataManager.register(RADIUS, 1f);
-		dataManager.register(COOLDOWN, 15);
+		dataManager.register(COOLDOWN, 0);
 	}
 	
 	@Override
@@ -44,17 +50,22 @@ public class EntityRift extends Entity {
 			AxisAlignedBB itemDetectionAABB = new AxisAlignedBB(posX - r, posY - 0.25, posZ - r, posX + r, posY + 0.25, posZ + r);
 			for(EntityItem item : world.getEntitiesWithinAABB(EntityItem.class, itemDetectionAABB)) {
 				if(item == null || item.isDead || item.getItem/*Stack*/().isEmpty()) continue;
-				//todo: actual recipe implementation
 				
-				ItemStack stack = item.getItem/*Stack*/();
-				if(stack.getItem() instanceof ItemRedstone) {
+				ItemStack input = item.getItem/*Stack*/();
+				Optional<ItemStack> outputMaybe = HaloRiftRecipes.getOutput(input);
+				
+				if(outputMaybe.isPresent()) {
+					ItemStack output = outputMaybe.get();
 					if(!world.isRemote) {
-						EntityItem newItem = new EntityItem(world, item.posX, item.posY, item.posZ, new ItemStack(Items.DIAMOND));
-						newItem.addVelocity(0,0.3,0);
-						world.spawnEntity(newItem);
+						EntityItem outputEntity = new EntityItem(world, item.posX, item.posY, item.posZ, output);
+						outputEntity.setPickupDelay(15);
+						outputEntity.addVelocity(0,0.3,0);
+						world.spawnEntity(outputEntity);
 					}
 					
-					stack.shrink(1);
+					//TODO: handle recipes with more than one input (like 4 inputs > 1 output)
+					input.shrink(1);
+					
 					cooldown = 5;
 					r -= 0.1;
 					

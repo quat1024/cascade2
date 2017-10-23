@@ -7,7 +7,8 @@ import quaternary.halogen.Halogen;
 public class HaloItems {
 	static HaloItem[] items = {
 					new ItemAuraCrystal(),
-					new ItemRift()
+					new ItemRift(),
+					new HaloItem("moon_dust")
 	};
 	
 	public static void registerItems(IForgeRegistry<Item> reg) {

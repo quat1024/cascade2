@@ -3,7 +3,8 @@
 #Aura Nodes
 tile.node_white.name=White Aura Node
 
-
+#Moon Stone
+tile.moon_stone.name=Moon Stone
 
 ############################# Items
 
@@ -13,7 +14,8 @@ item.rift.name=Rift
 #Aura Crystals
 item.aura_crystal.0.name=White Aura
 
-
+#Moon Dust
+item.moon_dust.name=Moon Dust
 
 ############################# Entities
 
