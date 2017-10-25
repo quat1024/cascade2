@@ -11,7 +11,7 @@ public class HaloItem extends Item {
 		name = jeff;
 		
 		setRegistryName(name);
-		setUnlocalizedName(name);
+		setUnlocalizedName(Halogen.MODID + "." + name);
 		setCreativeTab(Halogen.CREATIVE_TAB);
 	}
 	

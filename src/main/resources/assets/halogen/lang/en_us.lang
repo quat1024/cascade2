@@ -1,21 +1,22 @@
 ############################# Blocks
 
 #Aura Nodes
-tile.node_white.name=White Aura Node
+tile.halogen.node_white.name=White Aura Node
 
 #Moon Stone
-tile.moon_stone.name=Moon Stone
+tile.halogen.moon_stone.name=Moon Stone
+tile.halogen.polished_moon_stone.name=Polished Moon Stone
 
 ############################# Items
 
 #Rift
-item.rift.name=Rift
+item.halogen.rift.name=Rift
 
 #Aura Crystals
-item.aura_crystal.0.name=White Aura
+item.halogen.aura_crystal.0.name=White Aura
 
 #Moon Dust
-item.moon_dust.name=Moon Dust
+item.halogen.moon_dust.name=Moon Dust
 
 ############################# Entities
 

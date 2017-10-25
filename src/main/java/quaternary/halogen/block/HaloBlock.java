@@ -21,7 +21,7 @@ public class HaloBlock extends Block {
 		name = jeff; //My name jeff
 		
 		setRegistryName(name);
-		setUnlocalizedName(name);
+		setUnlocalizedName(Halogen.MODID + "." + name);
 		
 		setCreativeTab(Halogen.CREATIVE_TAB);
 		
