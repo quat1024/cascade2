@@ -52,7 +52,6 @@ public class EntityRift extends Entity {
 				if(item == null || item.isDead || item.getItem/*Stack*/().isEmpty()) continue;
 				
 				ItemStack inputStack = item.getItem/*Stack*/();
-				
 				Optional<ItemStack> outputMaybe = HaloRiftRecipes.getOutput(inputStack);
 				
 				if(outputMaybe.isPresent()) {
