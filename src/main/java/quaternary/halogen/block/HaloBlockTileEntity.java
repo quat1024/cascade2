@@ -7,8 +7,8 @@ import net.minecraft.world.World;
 
 //Thanks shadowfacts tutorial you're the best
 public abstract class HaloBlockTileEntity<T extends TileEntity> extends HaloBlock {
-	public HaloBlockTileEntity(String name, Material mat) {
-		super(name, mat);
+	public HaloBlockTileEntity(String name, Material mat, boolean solid) {
+		super(name, mat, solid);
 	}
 	
 	public abstract Class<T> getTileEntityClass();

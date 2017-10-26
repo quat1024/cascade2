@@ -17,7 +17,7 @@ public class BlockNode extends HaloBlockTileEntity<TileNode> {
 					3 / 4d, 3 / 4d, 3 / 4d);
 	
 	public BlockNode(String jeff) {
-		super(jeff, Material.ROCK); //Todo: real material choice
+		super(jeff, Material.ROCK, false);
 		
 		setLightOpacity(0);
 	}

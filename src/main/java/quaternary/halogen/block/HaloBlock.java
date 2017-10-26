@@ -15,7 +15,9 @@ public class HaloBlock extends Block {
 	ItemBlock itemForm;
 	String name;
 	
-	public HaloBlock(String jeff, Material mat) {
+	private boolean solid;
+	
+	public HaloBlock(String jeff, Material mat, boolean solid_) {
 		super(mat);
 		
 		name = jeff; //My name jeff
@@ -27,6 +29,8 @@ public class HaloBlock extends Block {
 		
 		itemForm = new ItemBlock(this);
 		itemForm.setRegistryName(name);
+		
+		solid = solid_;
 	}
 	
 	public ItemBlock getItemBlock() {
@@ -38,9 +42,8 @@ public class HaloBlock extends Block {
 		Halogen.PROXY.registerItemModel(itemForm);
 	}
 	
-	//Lol why isn't this the default
 	@Override
 	public BlockFaceShape getBlockFaceShape(IBlockAccess world, IBlockState state, BlockPos pos, EnumFacing facing) {
-		return BlockFaceShape.UNDEFINED;
+		return solid ? BlockFaceShape.SOLID : BlockFaceShape.UNDEFINED;
 	}
 }

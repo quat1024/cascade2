@@ -10,8 +10,8 @@ import quaternary.halogen.block.node.BlockNode;
 public class HaloBlocks {
 	public static final HaloBlock[] blocks = {
 					new BlockNode("node_white"),
-					new HaloBlock("moon_stone", Material.ROCK),
-					new HaloBlock("polished_moon_stone", Material.ROCK)
+					new HaloBlock("moon_stone", Material.ROCK, true),
+					new HaloBlock("polished_moon_stone", Material.ROCK, true)
 	};
 	
 	public static void registerBlocks(IForgeRegistry<Block> reg) {
