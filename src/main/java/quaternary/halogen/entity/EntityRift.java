@@ -51,20 +51,21 @@ public class EntityRift extends Entity {
 			for(EntityItem item : world.getEntitiesWithinAABB(EntityItem.class, itemDetectionAABB)) {
 				if(item == null || item.isDead || item.getItem/*Stack*/().isEmpty()) continue;
 				
-				ItemStack input = item.getItem/*Stack*/();
-				Optional<ItemStack> outputMaybe = HaloRiftRecipes.getOutput(input);
+				ItemStack inputStack = item.getItem/*Stack*/();
+				
+				Optional<ItemStack> outputMaybe = HaloRiftRecipes.getOutput(inputStack);
 				
 				if(outputMaybe.isPresent()) {
-					ItemStack output = outputMaybe.get();
+					ItemStack outputStack = outputMaybe.get();
 					if(!world.isRemote) {
-						EntityItem outputEntity = new EntityItem(world, item.posX, item.posY, item.posZ, output);
+						EntityItem outputEntity = new EntityItem(world, item.posX, item.posY, item.posZ, outputStack);
 						outputEntity.setPickupDelay(15);
 						outputEntity.addVelocity(0,0.3,0);
 						world.spawnEntity(outputEntity);
 					}
 					
 					//TODO: handle recipes with more than one input (like 4 inputs > 1 output)
-					input.shrink(1);
+					inputStack.shrink(1);
 					
 					cooldown = 5;
 					r -= 0.1;

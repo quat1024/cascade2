@@ -6,6 +6,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.oredict.OreDictionary;
+import quaternary.halogen.Halogen;
 import quaternary.halogen.util.Utils;
 
 import java.util.Optional;
@@ -38,13 +39,16 @@ public class RiftRecipe {
 	
 	public Optional<ItemStack> getOutput(ItemStack thingToMatch) {
 		if(in instanceof ItemStack) {
-			if(((ItemStack) in).isItemEqual(thingToMatch)) return Optional.of(out);
+			ItemStack inStack = (ItemStack) in;
+			if(inStack.isItemEqual(thingToMatch)) {
+				return Optional.of(out.copy());
+			}
 		} else {
 			NonNullList<ItemStack> matchingInputs = OreDictionary.getOres((String) in);
 			
 			//TODO: Am I doing this right?
 			for(ItemStack s : matchingInputs) {
-				if(s.isItemEqual(thingToMatch)) return Optional.of(out);
+				if(s.isItemEqual(thingToMatch)) return Optional.of(out.copy());
 			}
 		}
 		
