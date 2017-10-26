@@ -27,7 +27,6 @@ public class HaloBlock extends Block {
 		
 		itemForm = new ItemBlock(this);
 		itemForm.setRegistryName(name);
-		itemForm.setUnlocalizedName(name);
 	}
 	
 	public ItemBlock getItemBlock() {
