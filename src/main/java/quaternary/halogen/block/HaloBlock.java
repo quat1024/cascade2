@@ -46,4 +46,14 @@ public class HaloBlock extends Block {
 	public BlockFaceShape getBlockFaceShape(IBlockAccess world, IBlockState state, BlockPos pos, EnumFacing facing) {
 		return solid ? BlockFaceShape.SOLID : BlockFaceShape.UNDEFINED;
 	}
+	
+	@Override
+	public boolean isFullCube(IBlockState state) {
+		return solid;
+	}
+	
+	@Override
+	public boolean isOpaqueCube(IBlockState state) {
+		return solid;
+	}
 }

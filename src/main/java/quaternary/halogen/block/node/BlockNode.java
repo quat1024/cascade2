@@ -52,16 +52,6 @@ public class BlockNode extends HaloBlockTileEntity<TileNode> {
 	}
 	
 	@Override
-	public boolean isFullCube(IBlockState state) {
-		return false;
-	}
-	
-	@Override
-	public boolean isOpaqueCube(IBlockState state) {
-		return false;
-	}
-	
-	@Override
 	public boolean isPassable(IBlockAccess blah, BlockPos blahblah) {
 		return false;
 	}
