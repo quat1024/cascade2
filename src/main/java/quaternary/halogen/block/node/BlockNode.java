@@ -8,6 +8,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import quaternary.halogen.block.EnumHaloBlockType;
 import quaternary.halogen.block.HaloBlockTileEntity;
 import quaternary.halogen.tile.node.TileNode;
 
@@ -17,9 +18,7 @@ public class BlockNode extends HaloBlockTileEntity<TileNode> {
 					3 / 4d, 3 / 4d, 3 / 4d);
 	
 	public BlockNode(String jeff) {
-		super(jeff, Material.ROCK, false);
-		
-		setLightOpacity(0);
+		super(jeff, Material.ROCK, EnumHaloBlockType.NONFULL_SOLID, AABB);
 	}
 	
 	//messages to tile entity
@@ -46,16 +45,6 @@ public class BlockNode extends HaloBlockTileEntity<TileNode> {
 	}
 	
 	//block props
-	@Override
-	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess world, BlockPos pos) {
-		return AABB;
-	}
-	
-	@Override
-	public boolean isPassable(IBlockAccess blah, BlockPos blahblah) {
-		return false;
-	}
-	
 	@Override
 	public boolean hasComparatorInputOverride(IBlockState state) {
 		return true;
