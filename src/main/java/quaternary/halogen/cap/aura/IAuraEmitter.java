@@ -3,7 +3,7 @@ package quaternary.halogen.cap.aura;
 import quaternary.halogen.aura.type.AuraType;
 import quaternary.halogen.cap.ISaveLoadCapability;
 
-import javax.annotation.*;
+import javax.annotation.Nonnull;
 
 public interface IAuraEmitter extends ISaveLoadCapability {
 	IAuraStorage getStorage();

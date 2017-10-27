@@ -2,7 +2,6 @@ package quaternary.halogen;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -10,8 +9,6 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.RegistryBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import quaternary.halogen.block.HaloBlocks;
@@ -21,7 +18,6 @@ import quaternary.halogen.item.HaloItems;
 import quaternary.halogen.misc.HaloCreativeTab;
 import quaternary.halogen.proxy.CommonProxy;
 import quaternary.halogen.recipe.HaloRiftRecipes;
-import quaternary.halogen.recipe.RiftRecipe;
 
 @Mod(modid = Halogen.MODID, name = Halogen.NAME, version = Halogen.VERSION)
 public class Halogen {

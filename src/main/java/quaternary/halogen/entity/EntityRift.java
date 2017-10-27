@@ -1,20 +1,17 @@
 package quaternary.halogen.entity;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.init.Items;
-import net.minecraft.item.*;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import quaternary.halogen.Halogen;
 import quaternary.halogen.recipe.HaloRiftRecipes;
-import quaternary.halogen.recipe.RiftRecipe;
 
 import java.util.Optional;
 

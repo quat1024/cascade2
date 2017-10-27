@@ -2,14 +2,11 @@ package quaternary.halogen.cap.aura.impl;
 
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.util.math.MathHelper;
-import quaternary.halogen.*;
 import quaternary.halogen.aura.type.AuraType;
-import quaternary.halogen.cap.aura.IAuraEmitter;
-import quaternary.halogen.cap.aura.IAuraReceiver;
-import quaternary.halogen.cap.aura.IAuraStorage;
-import quaternary.halogen.util.*;
+import quaternary.halogen.cap.aura.*;
+import quaternary.halogen.util.Utils;
 
-import javax.annotation.*;
+import javax.annotation.Nonnull;
 
 public class AuraEmitterCap implements IAuraEmitter {
 	

@@ -1,12 +1,9 @@
 package quaternary.halogen.recipe;
 
-import com.google.common.base.Preconditions;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.oredict.OreDictionary;
-import quaternary.halogen.Halogen;
 import quaternary.halogen.util.Utils;
 
 import java.util.Optional;

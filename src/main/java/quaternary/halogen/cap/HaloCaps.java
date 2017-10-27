@@ -4,12 +4,8 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
-import quaternary.halogen.cap.aura.IAuraEmitter;
-import quaternary.halogen.cap.aura.IAuraReceiver;
-import quaternary.halogen.cap.aura.IAuraStorage;
-import quaternary.halogen.cap.aura.impl.AuraEmitterCap;
-import quaternary.halogen.cap.aura.impl.AuraReceiverCap;
-import quaternary.halogen.cap.aura.impl.AuraStorageCap;
+import quaternary.halogen.cap.aura.*;
+import quaternary.halogen.cap.aura.impl.*;
 
 import javax.annotation.Nullable;
 

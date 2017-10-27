@@ -1,11 +1,13 @@
 package quaternary.halogen.cap.aura.impl;
 
 import net.minecraft.nbt.*;
-import quaternary.halogen.aura.type.*;
-import quaternary.halogen.cap.*;
-import quaternary.halogen.cap.aura.*;
+import quaternary.halogen.aura.type.AuraType;
+import quaternary.halogen.aura.type.AuraTypes;
+import quaternary.halogen.cap.ISaveLoadCapability;
+import quaternary.halogen.cap.aura.IAuraStorage;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AuraStorageCap implements IAuraStorage, ISaveLoadCapability {
 	private HashMap<AuraType, Integer> storageMap = new HashMap<>();
