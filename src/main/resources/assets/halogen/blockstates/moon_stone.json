@@ -1,22 +1,27 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "textures": {
-      "all": "halogen:block/moon_stone"
-    },
     "model": "cube_all"
   },
   "variants": {
-    "normal": [
-      {"x": 90},
-      {"x": 180},
-      {"y": 90},
-      {"y": 180},
-      {"x": 90, "model": "cube_mirrored_all"},
-      {"x": 180, "model": "cube_mirrored_all"},
-      {"y": 90, "model": "cube_mirrored_all"},
-      {"y": 180, "model": "cube_mirrored_all"}
-    ],
+    "type": {
+      "normal": {
+        "textures": {
+          "all": "halogen:block/moon_stone"
+        }
+      },
+      "polished": {
+        "textures": {
+          "all": "halogen:block/polished_moon_stone"
+        }
+      },
+      "chiseled": {
+        "textures": {
+          "all": "halogen:block/chiseled_moon_stone"
+        }
+      }
+    },
+    
     "inventory": [{}]
   }
 }
