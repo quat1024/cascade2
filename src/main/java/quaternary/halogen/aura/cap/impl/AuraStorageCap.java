@@ -1,10 +1,10 @@
-package quaternary.halogen.cap.aura.impl;
+package quaternary.halogen.aura.cap.impl;
 
 import net.minecraft.nbt.*;
+import quaternary.halogen.aura.cap.IAuraStorage;
 import quaternary.halogen.aura.type.AuraType;
 import quaternary.halogen.aura.type.AuraTypes;
 import quaternary.halogen.cap.ISaveLoadCapability;
-import quaternary.halogen.cap.aura.IAuraStorage;
 
 import java.util.HashMap;
 import java.util.Map;

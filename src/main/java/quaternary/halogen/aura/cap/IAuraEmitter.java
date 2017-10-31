@@ -1,4 +1,4 @@
-package quaternary.halogen.cap.aura;
+package quaternary.halogen.aura.cap;
 
 import net.minecraft.util.EnumFacing;
 import quaternary.halogen.aura.type.AuraType;

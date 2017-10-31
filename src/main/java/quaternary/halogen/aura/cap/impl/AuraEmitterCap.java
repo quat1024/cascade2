@@ -1,10 +1,10 @@
-package quaternary.halogen.cap.aura.impl;
+package quaternary.halogen.aura.cap.impl;
 
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.MathHelper;
+import quaternary.halogen.aura.cap.*;
 import quaternary.halogen.aura.type.AuraType;
-import quaternary.halogen.cap.aura.*;
 import quaternary.halogen.util.Utils;
 
 import javax.annotation.Nonnull;

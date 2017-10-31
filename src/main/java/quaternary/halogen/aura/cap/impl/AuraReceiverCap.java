@@ -1,8 +1,8 @@
-package quaternary.halogen.cap.aura.impl;
+package quaternary.halogen.aura.cap.impl;
 
 import net.minecraft.nbt.NBTBase;
+import quaternary.halogen.aura.cap.*;
 import quaternary.halogen.aura.type.AuraType;
-import quaternary.halogen.cap.aura.*;
 
 public class AuraReceiverCap implements IAuraReceiver {
 	
