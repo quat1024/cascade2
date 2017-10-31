@@ -95,10 +95,10 @@ public class TileNode extends TileEntity implements ITickable {
     //    |                          |
     //    |                   .----'~~~`----.
     //    |                 .'               `.
-    //    |                 |     R  I  P      |
-    //    |                 |                  |
-    //    |                 | ! world.isRemote |
-    //     \              \\|                  |//
+    //    |                 |     R  I  P     |
+    //    |                 |                 |
+    //    |                 | !world.isRemote |
+    //     \              \\|                 |//
     //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 		//
 		//
