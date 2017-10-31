@@ -1,4 +1,4 @@
-package quaternary.halogen.util;
+package quaternary.halogen.misc;
 
 /**
  * Since Halogen follows a "no user-facing numbers" policy, I will hide them all here.
@@ -42,5 +42,6 @@ package quaternary.halogen.util;
  */
 public class DisgustingNumbers {
 	public static final int NODE_MAX_AURA = 1000;
+	public static final int NODE_AURA_BURST_SIZE = 20;
 	public static final int AURA_CRYSTAL_CONTAINED_AURA = 50;
 }

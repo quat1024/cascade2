@@ -16,12 +16,14 @@ import quaternary.halogen.aura.type.AuraTypes;
 import quaternary.halogen.cap.aura.*;
 import quaternary.halogen.cap.aura.impl.*;
 import quaternary.halogen.item.ItemAuraCrystal;
-import quaternary.halogen.util.DisgustingNumbers;
+import quaternary.halogen.misc.DisgustingNumbers;
 import quaternary.halogen.util.RenderUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
+
+import static quaternary.halogen.misc.DisgustingNumbers.NODE_AURA_BURST_SIZE;
 
 public class TileNode extends TileEntity implements ITickable {
 	private static final AxisAlignedBB DETECTION_AABB = new AxisAlignedBB(0.2, 0.2, 0.2, 0.8, 0.8, 0.8);
@@ -89,12 +91,18 @@ public class TileNode extends TileEntity implements ITickable {
 						IAuraReceiver otherCap = bepsi.getCapability(RECEIVER, whichWay.getOpposite());
 						if(otherCap == null) continue; //Probably won't happen unless hasCapability is lying.
 						
-						emitterCap.emitAura(AuraTypes.NORMAL, 20, otherCap);
+						emitterCap.emitAura(AuraTypes.NORMAL, NODE_AURA_BURST_SIZE, whichWay, otherCap);
 						world.updateComparatorOutputLevel(pos, world.getBlockState(pos).getBlock());
 						break;
 					}
 				}
 			}
+		}
+		
+		//Even temporarier than the previous temporary thing
+		if(receiverCap.shouldUpdateComparator) {
+			world.updateComparatorOutputLevel(pos, world.getBlockState(pos).getBlock());
+			receiverCap.shouldUpdateComparator = false;
 		}
 	}
 	

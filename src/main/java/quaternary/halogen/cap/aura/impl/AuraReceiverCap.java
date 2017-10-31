@@ -8,6 +8,7 @@ public class AuraReceiverCap implements IAuraReceiver {
 	
 	private boolean canReceive;
 	private IAuraStorage storage;
+	public boolean shouldUpdateComparator = false; //TODO
 	
 	public AuraReceiverCap(IAuraStorage storage) {
 		this.storage = storage;
@@ -37,6 +38,7 @@ public class AuraReceiverCap implements IAuraReceiver {
 	@Override
 	public void receiveAura(AuraType type, int amt, IAuraEmitter emitter) {
 		storage.addAura(type, amt);
+		shouldUpdateComparator = true;
 	}
 	
 	@Override
