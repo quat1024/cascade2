@@ -1,18 +1,16 @@
-package quaternary.halogen.aura.cap.impl;
+package quaternary.halogen.aura.cap.impl.emitter;
 
 import net.minecraft.nbt.NBTBase;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.MathHelper;
 import quaternary.halogen.aura.cap.*;
 import quaternary.halogen.aura.type.AuraType;
 import quaternary.halogen.util.Utils;
 
 import javax.annotation.Nonnull;
 
-public class AuraEmitterCap implements IAuraEmitter {
+public abstract class AuraEmitterCap implements IAuraEmitter {
 	
 	private boolean canEmit;
-	private IAuraStorage storage;
+	IAuraStorage storage;
 	
 	public AuraEmitterCap(IAuraStorage storage) {
 		this.storage = storage;
@@ -36,24 +34,20 @@ public class AuraEmitterCap implements IAuraEmitter {
 	
 	//It's a mess!
 	@Override
-	public boolean canEmitAura(AuraType type, int amt, EnumFacing whichWay, @Nonnull IAuraReceiver receiver) {
-		return doEmitAura(type, amt, whichWay, receiver, false);
+	public boolean canEmitAura(AuraType type, int amt, @Nonnull IAuraReceiver receiver) {
+		return doEmitAura(type, amt, receiver, false);
 	}
 	
 	@Override
-	public void emitAura(AuraType type, int amt, EnumFacing whichWay, @Nonnull IAuraReceiver receiver) {
-		doEmitAura(type, amt, whichWay, receiver, true);
+	public void emitAura(AuraType type, int amt, @Nonnull IAuraReceiver receiver) {
+		doEmitAura(type, amt, receiver, true);
 	}
 	
-	private boolean doEmitAura(AuraType type, int amt, EnumFacing whichWay, @Nonnull IAuraReceiver receiver, boolean forReal) {
-		if(whichWay == EnumFacing.UP) return false; //This node can't send aura upwards
-		
-		if(isEligible() && receiver.isEligible()) {
-			int auraDifference = storage.getTotalAura() - receiver.getStorage().getTotalAura();
-			
+	private boolean doEmitAura(AuraType type, int amt, @Nonnull IAuraReceiver receiver, boolean forReal) {		
+		if(isEligible() && receiver.isEligible()) {			
+			/*
 			int toEmit;
-			if(whichWay == EnumFacing.DOWN) {
-				//Unconditionally try to empty all aura downwards.
+			if(fireAll) {
 				toEmit = amt;
 			} else if(auraDifference > 1) {
 				//Try to divide aura evenly between myself and the other node.
@@ -65,8 +59,9 @@ public class AuraEmitterCap implements IAuraEmitter {
 				//the node I'm trying to send to, don't send any at all.
 				return false;
 			}
+			*/
+			int toEmit = getEmittedAura(receiver.getStorage(), amt);
 			
-			//clamp aura to reasonable levels
 			toEmit = Utils.min(toEmit, amt, storage.getTotalAura(), receiver.getStorage().getRemainingSpace());
 			
 			if(toEmit != 0) {
@@ -80,6 +75,8 @@ public class AuraEmitterCap implements IAuraEmitter {
 		
 		return false;
 	}
+	
+	abstract int getEmittedAura(IAuraStorage other, int amt);
 	
 	@Override
 	public NBTBase writeNBT() {

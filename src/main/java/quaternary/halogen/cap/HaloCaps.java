@@ -5,7 +5,9 @@ import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import quaternary.halogen.aura.cap.*;
-import quaternary.halogen.aura.cap.impl.*;
+import quaternary.halogen.aura.cap.impl.AuraReceiverCap;
+import quaternary.halogen.aura.cap.impl.AuraStorageCap;
+import quaternary.halogen.aura.cap.impl.emitter.AuraEmitterCap;
 
 import javax.annotation.Nullable;
 

@@ -13,7 +13,9 @@ import net.minecraft.util.math.*;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import quaternary.halogen.aura.cap.*;
-import quaternary.halogen.aura.cap.impl.*;
+import quaternary.halogen.aura.cap.impl.AuraReceiverCap;
+import quaternary.halogen.aura.cap.impl.AuraStorageCap;
+import quaternary.halogen.aura.cap.impl.emitter.*;
 import quaternary.halogen.aura.type.AuraTypes;
 import quaternary.halogen.item.ItemAuraCrystal;
 import quaternary.halogen.misc.DisgustingNumbers;
@@ -21,22 +23,28 @@ import quaternary.halogen.util.RenderUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.List;
-
-import static quaternary.halogen.misc.DisgustingNumbers.NODE_AURA_BURST_SIZE;
+import java.util.*;
 
 public class TileNode extends TileEntity implements ITickable {
 	private static final AxisAlignedBB DETECTION_AABB = new AxisAlignedBB(0.2, 0.2, 0.2, 0.8, 0.8, 0.8);
 	
 	private AuraStorageCap storageCap;
-	private AuraEmitterCap emitterCap;
 	private AuraReceiverCap receiverCap;
+	
+	private HashMap<EnumFacing, AuraEmitterCap> emitters = new HashMap<>();
 	
 	private int auraAbsorptionCooldown = 0;
 	
 	public TileNode() {
 		storageCap = new AuraStorageCap(DisgustingNumbers.NODE_MAX_AURA);
-		emitterCap = new AuraEmitterCap(storageCap);
+		
+		emitters.clear();
+		for(EnumFacing whichWay : EnumFacing.values()) {
+			if(whichWay == EnumFacing.UP) continue;
+			if(whichWay == EnumFacing.DOWN) emitters.put(whichWay, new AuraDownwardsEmitterCap(storageCap));
+			else emitters.put(whichWay, new AuraSidewaysEmitterCap(storageCap));
+		}
+		
 		receiverCap = new AuraReceiverCap(storageCap);
 	}
 	
@@ -73,27 +81,54 @@ public class TileNode extends TileEntity implements ITickable {
 			}
 		}
 		
-		//Temp af
-		//put this in another class eventually
-		if(!world.isRemote && emitterCap.isEligible() && world.getTotalWorldTime() % 15 == 0) {
-			for(EnumFacing whichWay : EnumFacing.values()) {
-				if(whichWay == EnumFacing.UP) continue; //quality code
+		//
+		//            here lies exclamation point of doom
+		//
+		//
+		//        _.---,._,'
+    //   /' _.--.<
+    //     /'     `'
+    //   /' _.---._____
+    //   \.'   ___, .-'`
+    //       /'    \\                .
+    //     /'       `-.             -|-
+    //    |                          |
+    //    |                   .----'~~~`----.
+    //    |                 .'               `.
+    //    |                 |     R  I  P      |
+    //    |                 |                  |
+    //    |                 | ! world.isRemote |
+    //     \              \\|                  |//
+    //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+		//
+		//
+		//              oct 30, 2017 - oct 30, 2017
+		//
+		
+		if(world.isRemote || world.getTotalWorldTime() % 15 != 0) return;
+		
+		for(Map.Entry<EnumFacing, AuraEmitterCap> entry : emitters.entrySet()) {
+			EnumFacing whichWay = entry.getKey();
+			AuraEmitterCap emitter = entry.getValue();
+			
+			if(emitter.isEligible()) {
 				for(int dist = 1; dist < 16; dist++) {
 					BlockPos toCheck = pos.offset(whichWay, dist);
 					
-					if(!world.isBlockLoaded(toCheck)) continue;
+					if(!world.isBlockLoaded(toCheck)) break;
 					if(!canConnectionPass(world.getBlockState(toCheck))) break;
 					
-					TileEntity bepsi = world.getTileEntity(toCheck);
-					if(bepsi == null) continue;
+					TileEntity otherTE = world.getTileEntity(toCheck);
+					if(otherTE == null) continue;
 					
-					if(bepsi.hasCapability(RECEIVER, whichWay.getOpposite())) {
-						IAuraReceiver otherCap = bepsi.getCapability(RECEIVER, whichWay.getOpposite());
-						if(otherCap == null) continue; //Probably won't happen unless hasCapability is lying.
+					if(otherTE.hasCapability(RECEIVER, whichWay.getOpposite())) {
+						IAuraReceiver otherReceiver = otherTE.getCapability(RECEIVER, whichWay.getOpposite());
+						//I just checked hasCapability, so this BETTER not be null.
+						assert otherReceiver != null;
 						
-						emitterCap.emitAura(AuraTypes.NORMAL, NODE_AURA_BURST_SIZE, whichWay, otherCap);
+						emitter.emitAura(AuraTypes.NORMAL, DisgustingNumbers.NODE_AURA_BURST_SIZE, otherReceiver);
 						world.updateComparatorOutputLevel(pos, world.getBlockState(pos).getBlock());
-						break;
+						break; //don't emit to another object behind this one
 					}
 				}
 			}
@@ -144,7 +179,7 @@ public class TileNode extends TileEntity implements ITickable {
 	public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
 		if(capability == STORAGE) return (T) storageCap;
 		if(capability == RECEIVER) return (T) receiverCap;
-		if(capability == EMITTER && facing != EnumFacing.UP) return (T) emitterCap;
+		if(capability == EMITTER && facing != EnumFacing.UP) return (T) emitters.get(facing);
 		
 		return super.getCapability(capability, facing);
 	}
@@ -154,6 +189,7 @@ public class TileNode extends TileEntity implements ITickable {
 	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
 		nbt.setTag("Aura", storageCap.writeNBT());
 		nbt.setInteger("AbsorptionCooldown", auraAbsorptionCooldown);
+		//todo: write emitters
 		return super.writeToNBT(nbt);
 	}
 	
@@ -161,6 +197,7 @@ public class TileNode extends TileEntity implements ITickable {
 	public void readFromNBT(NBTTagCompound nbt) {
 		storageCap.readNBT(nbt.getTagList("Aura", 10));
 		auraAbsorptionCooldown = nbt.getInteger("AbsorptionCooldown");
+		//todo: read emitters
 		super.readFromNBT(nbt);
 	}
 }
