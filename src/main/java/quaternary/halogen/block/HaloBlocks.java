@@ -11,8 +11,6 @@ public class HaloBlocks {
 	public static final HaloBlock[] blocks = {
 					new BlockNode("node_white"),
 					new BlockMoonStone()
-					//new HaloBlock("moon_stone", Material.ROCK),
-					//new HaloBlock("polished_moon_stone", Material.ROCK)
 	};
 	
 	public static void registerBlocks(IForgeRegistry<Block> reg) {

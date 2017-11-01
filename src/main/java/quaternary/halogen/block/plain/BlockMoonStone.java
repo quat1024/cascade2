@@ -6,6 +6,7 @@ import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.ItemMultiTexture;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.NonNullList;
@@ -21,9 +22,10 @@ public class BlockMoonStone extends HaloBlock {
 		super("moon_stone", Material.ROCK, EnumHaloBlockType.FULLCUBE, Block.FULL_BLOCK_AABB);
 		
 		setDefaultState(blockState.getBaseState().withProperty(MOONSTONE_STATES, EnumMoonstoneStates.NORMAL));
+		
+		itemForm = new ItemMultiTexture(this, this, stack -> EnumMoonstoneStates.nameFromID(stack.getMetadata()));
+		itemForm.setRegistryName(name);
 	}
-	
-	//blockstate stuff
 	
 	@Nonnull
 	@Override
@@ -60,5 +62,10 @@ public class BlockMoonStone extends HaloBlock {
 		}
 		
 		public String getName() { return name; }
+		
+		//helper func to avoid crashes/etc when giving a block with invalid meta for some reason
+		static String nameFromID(int id) {
+			return id < values().length ? values()[id].getName() : "";
+		}
 	}
 }

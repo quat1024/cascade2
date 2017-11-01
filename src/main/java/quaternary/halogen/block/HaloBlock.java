@@ -15,8 +15,8 @@ import quaternary.halogen.Halogen;
  * Also simplifies some fullCube logic, etc (less dependent on the block material) */
 public class HaloBlock extends Block {
 	
-	private ItemBlock itemForm;
-	private String name;
+	protected ItemBlock itemForm;
+	public String name;
 	
 	//the reason this has a default value: super() has to be first for somefuckingreason in java
 	//and Block's constructor looks at things like isOpaqueCube which is null if this is too
