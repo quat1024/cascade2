@@ -1,7 +1,6 @@
 package quaternary.halogen.aura.cap.impl;
 
 import net.minecraft.nbt.NBTBase;
-import quaternary.halogen.Halogen;
 import quaternary.halogen.aura.cap.*;
 import quaternary.halogen.aura.type.AuraType;
 
@@ -38,10 +37,7 @@ public class AuraReceiverCap implements IAuraReceiver {
 	
 	@Override
 	public void receiveAura(AuraType type, int amt, IAuraEmitter emitter) {
-		Halogen.LOGGER.info("RECEEEEVER adding " + amt + " aura");
-		Halogen.LOGGER.info("Before " + storage.getTotalAura());
 		storage.addAura(type, amt);
-		Halogen.LOGGER.info("After " + storage.getTotalAura());
 		shouldUpdateComparator = true;
 	}
 	
