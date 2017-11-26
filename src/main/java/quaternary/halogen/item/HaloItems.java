@@ -1,14 +1,16 @@
 package quaternary.halogen.item;
 
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.registries.IForgeRegistry;
-import quaternary.halogen.Halogen;
+import quaternary.halogen.aura.type.AuraTypes;
 
 public class HaloItems {
 	static HaloItem[] items = {
-					new ItemAuraCrystal(),
-					new ItemRift(),
-					new HaloItem("moon_dust")
+		new ItemAuraCrystal(AuraTypes.NORMAL),
+		new ItemRift(),
+		new HaloItem("moon_dust")
 	};
 	
 	public static void registerItems(IForgeRegistry<Item> reg) {
@@ -17,13 +19,11 @@ public class HaloItems {
 	
 	public static void registerItemModels() {
 		//todo: handle data values properly instead of just assuming there aren't any
-		//for example aura crystal items should DEFFO have a dv
+		//HELLO PAST QUAT
+		//this isn't coming out for 1.12 anyways so let's just party like it's 1.13
 		for(HaloItem i : items) {
-			if(i.getHasSubtypes()) {
-				i.registerSubtypeModels();
-			} else {
-				Halogen.PROXY.registerItemModel(i);
-			}
+			ModelLoader.setCustomModelResourceLocation(i, 0,
+				new ModelResourceLocation(i.getRegistryName(), "inventory"));
 		}
 	}
 }

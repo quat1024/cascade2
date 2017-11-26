@@ -4,11 +4,13 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraftforge.client.model.ModelLoader;
 import quaternary.halogen.Halogen;
 
 /** base class for halogen blocks. 
@@ -53,7 +55,8 @@ public class HaloBlock extends Block {
 	
 	void registerItemBlockModel() {
 		//todo: handle data values
-		Halogen.PROXY.registerItemModel(itemForm);
+		ModelLoader.setCustomModelResourceLocation(itemForm, 0, 
+			new ModelResourceLocation(itemForm.getRegistryName(), "inventory"));
 	}
 	
 	//Begin convenience overrides

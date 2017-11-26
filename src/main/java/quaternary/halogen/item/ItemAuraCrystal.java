@@ -1,28 +1,18 @@
 package quaternary.halogen.item;
 
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
-import quaternary.halogen.Halogen;
+import quaternary.halogen.aura.type.AuraType;
 
 public class ItemAuraCrystal extends HaloItem {
-	//TODO move this int to aura system class
-	public static final int MAX_AURA_COLORS = 8;
-	
-	public ItemAuraCrystal() {
-		super("aura_crystal");
+	AuraType type;
+	//todo: Maybe pass in an auratype instead of this thing?
+	public ItemAuraCrystal(AuraType type_) {
+		super("aura_crystal_" + type_.getName());
 		
-		setHasSubtypes(true);
-		setMaxDamage(0);
-	}
-	
-	@Override
-	public String getUnlocalizedName(ItemStack stack) {
-		//TODO actual aura names
-		return super.getUnlocalizedName() + "." + stack.getMetadata();
+		type = type_;
 	}
 	
 	//TODO: add functionality for this in ModItems, maybe.
+	/*
 	@Override
 	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> stacks) {
 		if(isInCreativeTab(tab)) {
@@ -36,7 +26,10 @@ public class ItemAuraCrystal extends HaloItem {
 	public void registerSubtypeModels() {
 		for(int i = 0; i < MAX_AURA_COLORS; i++) {
 			//todo: actual aura names
-			Halogen.PROXY.registerItemModelWithSuffix(this, i, "type" + i);
+			//Halogen.PROXY.registerItemModelWithSuffix(this, i, "type" + i);
+			ModelLoader.setCustomModelResourceLocation(this, i,
+				new ModelResourceLocation(this.getRegistryName() + "_type" + i, "inventory"));
 		}
 	}
+	*/
 }

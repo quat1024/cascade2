@@ -4,7 +4,6 @@ import net.minecraft.item.Item;
 import quaternary.halogen.Halogen;
 
 public class HaloItem extends Item {
-	
 	String name;
 	
 	public HaloItem(String jeff) {
@@ -13,10 +12,5 @@ public class HaloItem extends Item {
 		setRegistryName(name);
 		setUnlocalizedName(Halogen.MODID + "." + name);
 		setCreativeTab(Halogen.CREATIVE_TAB);
-	}
-	
-	//Called in ModItems, override iff using subtypes
-	public void registerSubtypeModels() {
-		//lol no
 	}
 }
