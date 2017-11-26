@@ -8,10 +8,10 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import quaternary.halogen.block.EnumHaloBlockType;
-import quaternary.halogen.block.HaloBlockTileEntity;
+import quaternary.halogen.block.HaloBlock;
 import quaternary.halogen.tile.node.TileNode;
 
-public class BlockNode extends HaloBlockTileEntity<TileNode> {
+public class BlockNode extends HaloBlock {
 	static final AxisAlignedBB AABB = new AxisAlignedBB(
 					1 / 4d, 1 / 4d, 1 / 4d,
 					3 / 4d, 3 / 4d, 3 / 4d);
@@ -30,12 +30,6 @@ public class BlockNode extends HaloBlockTileEntity<TileNode> {
 	public void breakBlock(World world, BlockPos pos, IBlockState state) {
 		//((TileEntityAuraNode) world.getTileEntity(pos)).onBreakBlock();
 		super.breakBlock(world, pos, state);
-	}
-	
-	//tile entity setup (called from modblocks)
-	@Override
-	public Class<TileNode> getTileEntityClass() {
-		return TileNode.class;
 	}
 	
 	@Override

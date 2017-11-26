@@ -53,7 +53,7 @@ public class HaloBlock extends Block {
 		return itemForm;
 	}
 	
-	void registerItemBlockModel() {
+	public void registerItemBlockModel() {
 		//todo: handle data values
 		ModelLoader.setCustomModelResourceLocation(itemForm, 0, 
 			new ModelResourceLocation(itemForm.getRegistryName(), "inventory"));
