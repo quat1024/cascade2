@@ -56,7 +56,7 @@ public class EntityRift extends Entity {
 					if(!world.isRemote) {
 						EntityItem outputEntity = new EntityItem(world, item.posX, item.posY, item.posZ, outputStack);
 						outputEntity.setPickupDelay(15);
-						outputEntity.addVelocity(0,0.3,0);
+						outputEntity.addVelocity(0, 0.3, 0);
 						world.spawnEntity(outputEntity);
 					}
 					
@@ -82,9 +82,9 @@ public class EntityRift extends Entity {
 	}
 	
 	void setRad(float radius) {
-		float entityHeight = radius > 1f? 0.5f : radius/2f;
+		float entityHeight = radius > 1f ? 0.5f : radius / 2f;
 		
-		setSize(radius*2, entityHeight);
+		setSize(radius * 2, entityHeight);
 		
 		dataManager.set(RADIUS, radius);
 	}

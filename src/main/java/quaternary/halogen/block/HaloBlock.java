@@ -13,8 +13,10 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.client.model.ModelLoader;
 import quaternary.halogen.Halogen;
 
-/** base class for halogen blocks. 
- * Also simplifies some fullCube logic, etc (less dependent on the block material) */
+/**
+ * base class for halogen blocks.
+ * Also simplifies some fullCube logic, etc (less dependent on the block material)
+ */
 public class HaloBlock extends Block {
 	
 	protected ItemBlock itemForm;
@@ -55,15 +57,15 @@ public class HaloBlock extends Block {
 	
 	void registerItemBlockModel() {
 		//todo: handle data values
-		ModelLoader.setCustomModelResourceLocation(itemForm, 0, 
-			new ModelResourceLocation(itemForm.getRegistryName(), "inventory"));
+		ModelLoader.setCustomModelResourceLocation(itemForm, 0,
+		new ModelResourceLocation(itemForm.getRegistryName(), "inventory"));
 	}
 	
 	//Begin convenience overrides
 	
 	@Override
 	public BlockFaceShape getBlockFaceShape(IBlockAccess world, IBlockState state, BlockPos pos, EnumFacing facing) {
-		return type.OPAQUE_FULL_CUBE? BlockFaceShape.SOLID : BlockFaceShape.UNDEFINED;
+		return type.OPAQUE_FULL_CUBE ? BlockFaceShape.SOLID : BlockFaceShape.UNDEFINED;
 	}
 	
 	@Override

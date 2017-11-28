@@ -20,7 +20,7 @@ import quaternary.halogen.tile.node.TileNode;
 public class HUD {
 	@SubscribeEvent
 	public static void renderHUD(RenderGameOverlayEvent.Post e) {
-		if(e.getType() != RenderGameOverlayEvent.ElementType.ALL) return;		
+		if(e.getType() != RenderGameOverlayEvent.ElementType.ALL) return;
 		
 		Minecraft mc = Minecraft.getMinecraft();
 		RayTraceResult trace = mc.objectMouseOver;

@@ -16,6 +16,7 @@ public class RenderUtils {
 		//Isn't it funny that you have to convert this type into a particle ID, where spawnEffectParticle
 		//immediately converts it right back to an enumparticletypes?
 		//Isn't that fabulous.
+		//TODO fix this lol
 		int id = type.getParticleID();
 		
 		//Anyways.

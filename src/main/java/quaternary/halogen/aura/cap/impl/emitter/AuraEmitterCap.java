@@ -43,7 +43,7 @@ public abstract class AuraEmitterCap implements IAuraEmitter {
 		doEmitAura(type, amt, receiver, true);
 	}
 	
-	private boolean doEmitAura(AuraType type, int amt, @Nonnull IAuraReceiver receiver, boolean forReal) {		
+	private boolean doEmitAura(AuraType type, int amt, @Nonnull IAuraReceiver receiver, boolean forReal) {
 		if(isEligible() && receiver.isEligible()) {			
 			/*
 			int toEmit;

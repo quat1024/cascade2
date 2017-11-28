@@ -13,8 +13,8 @@ import quaternary.halogen.tile.node.TileNode;
 
 public class BlockNode extends HaloBlockTileEntity<TileNode> {
 	static final AxisAlignedBB AABB = new AxisAlignedBB(
-					1 / 4d, 1 / 4d, 1 / 4d,
-					3 / 4d, 3 / 4d, 3 / 4d);
+	1 / 4d, 1 / 4d, 1 / 4d,
+	3 / 4d, 3 / 4d, 3 / 4d);
 	
 	public BlockNode(String jeff) {
 		super(jeff, Material.ROCK, EnumHaloBlockType.NONFULL_SOLID, AABB);

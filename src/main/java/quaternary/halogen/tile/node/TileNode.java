@@ -86,20 +86,20 @@ public class TileNode extends TileEntity implements ITickable {
 		//
 		//
 		//        _.---,._,'
-    //   /' _.--.<
-    //     /'     `'
-    //   /' _.---._____
-    //   \.'   ___, .-'`
-    //       /'    \\                .
-    //     /'       `-.             -|-
-    //    |                          |
-    //    |                   .----'~~~`----.
-    //    |                 .'               `.
-    //    |                 |     R  I  P     |
-    //    |                 |                 |
-    //    |                 | !world.isRemote |
-    //     \              \\|                 |//
-    //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+		//   /' _.--.<
+		//     /'     `'
+		//   /' _.---._____
+		//   \.'   ___, .-'`
+		//       /'    \\                .
+		//     /'       `-.             -|-
+		//    |                          |
+		//    |                   .----'~~~`----.
+		//    |                 .'               `.
+		//    |                 |     R  I  P     |
+		//    |                 |                 |
+		//    |                 | !world.isRemote |
+		//     \              \\|                 |//
+		//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 		//
 		//
 		//              oct 30, 2017 - oct 30, 2017
@@ -144,7 +144,7 @@ public class TileNode extends TileEntity implements ITickable {
 	//THINGS TO PUT IN ANOTHER CLASS EVENTUALLY LOLOL
 	//REMEMBER HOW WELL THAT WORKED LAST TIME
 	private boolean canConnectionPass(IBlockState state) {
-		return(state.getMaterial().isReplaceable() || state.getMaterial().isLiquid()) || !state.isFullBlock() && !state.isFullCube();
+		return (state.getMaterial().isReplaceable() || state.getMaterial().isLiquid()) || !state.isFullBlock() && !state.isFullCube();
 	}
 	
 	//Properties idk

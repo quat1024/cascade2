@@ -4,6 +4,7 @@ import quaternary.halogen.aura.type.AuraType;
 
 public class ItemAuraCrystal extends HaloItem {
 	AuraType type;
+	
 	//todo: Maybe pass in an auratype instead of this thing?
 	public ItemAuraCrystal(AuraType type_) {
 		super("aura_crystal_" + type_.getName());

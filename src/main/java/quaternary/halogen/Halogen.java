@@ -29,7 +29,7 @@ public class Halogen {
 	public static Halogen INSTANCE = new Halogen();
 	
 	@SidedProxy(clientSide = "quaternary.halogen.proxy.ClientProxy",
-					serverSide = "quaternary.halogen.proxy.CommonProxy")
+	serverSide = "quaternary.halogen.proxy.CommonProxy")
 	public static CommonProxy PROXY;
 	
 	public static final HaloCreativeTab CREATIVE_TAB = new HaloCreativeTab();
@@ -43,7 +43,7 @@ public class Halogen {
 		
 		PROXY.registerEntityRenderers();
 		//PROXY.registerTESRs();
-	}	
+	}
 	
 	@Mod.EventHandler
 	@SuppressWarnings("unused")

@@ -18,13 +18,14 @@ public class HaloEntities {
 	
 	public static void registerEntities() {
 		//thrown rift
-		reg(THROWN_RIFT_NAME, EntityThrownRift.class, 64, 5,  true);
+		reg(THROWN_RIFT_NAME, EntityThrownRift.class, 64, 5, true);
 		//the rift itself
 		//Todo: Make this entity send its own packets, maybe, because it doesn't update regularly.
-		reg(RIFT_NAME,        EntityRift.class,       96, 10, true);
+		reg(RIFT_NAME, EntityRift.class, 96, 10, true);
 	}
 	
 	private static int id = 0;
+	
 	/** quick wrapper to make the registration process a bit cleaner shh */
 	private static void reg(String name, Class c, int trackingRange, int trackingFreq, boolean velocityPackets) {
 		EntityRegistry.registerModEntity(resify(name), c, prefixify(name), id++, Halogen.INSTANCE, trackingRange, trackingFreq, velocityPackets);
@@ -34,16 +35,18 @@ public class HaloEntities {
 	public static final Item riftItem = null;
 	
 	@SideOnly(Side.CLIENT)
-	public static void registerEntityRenderers() {		
+	public static void registerEntityRenderers() {
 		RenderingRegistry.registerEntityRenderingHandler(EntityThrownRift.class, rm -> new RenderSnowball<>(rm, riftItem, Minecraft.getMinecraft().getRenderItem()));
 		RenderingRegistry.registerEntityRenderingHandler(EntityRift.class, RenderNothing::new);
 	}
 	
-	/** The internal resloc this entity is stored under.
+	/**
+	 * The internal resloc this entity is stored under.
 	 * Also the name for command blocks.
-	 * Apparently those can include colons now! Who knew. */
+	 * Apparently those can include colons now! Who knew.
+	 */
 	private static ResourceLocation resify(String in) {
-		return new ResourceLocation(Halogen.MODID , in);
+		return new ResourceLocation(Halogen.MODID, in);
 	}
 	
 	/** The name used to look up localization strings. */

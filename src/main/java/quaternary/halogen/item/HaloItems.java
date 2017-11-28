@@ -23,7 +23,7 @@ public class HaloItems {
 		//this isn't coming out for 1.12 anyways so let's just party like it's 1.13
 		for(HaloItem i : items) {
 			ModelLoader.setCustomModelResourceLocation(i, 0,
-				new ModelResourceLocation(i.getRegistryName(), "inventory"));
+			new ModelResourceLocation(i.getRegistryName(), "inventory"));
 		}
 	}
 }
