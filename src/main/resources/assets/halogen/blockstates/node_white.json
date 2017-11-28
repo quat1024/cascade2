@@ -1,15 +1,15 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "textures": {
-      "up":   "halogen:block/node/node_white",
-      "side": "halogen:block/node/node_white",
-      "down": "halogen:block/node/node_white"
-    },
-    "model": "halogen:node/node_smol_cube"
-  },
-  "variants": {
-    "normal": [{}],
-    "inventory": [{}]
-  }
+	"forge_marker": 1,
+	"defaults": {
+		"model": "halogen:node/node_smol_cube",
+		"textures": {
+			"up": "halogen:block/node/node_white",
+			"side": "halogen:block/node/node_white",
+			"down": "halogen:block/node/node_white"
+		}
+	},
+	"variants": {
+		"normal": [{}],
+		"inventory": [{}]
+	}
 }

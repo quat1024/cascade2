@@ -5,12 +5,14 @@ import net.minecraft.item.Item;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
 import quaternary.halogen.block.node.BlockNode;
-import quaternary.halogen.block.plain.BlockMoonStone;
+import quaternary.halogen.block.plain.BlockRiftStone;
 
 public class HaloBlocks {
 	public static final HaloBlock[] blocks = {
-					new BlockNode("node_white"),
-					new BlockMoonStone()
+		new BlockNode("node_white"),
+		new BlockRiftStone("normal"),
+		new BlockRiftStone("polished"),
+		new BlockRiftStone("chiseled"),
 	};
 	
 	public static void registerBlocks(IForgeRegistry<Block> reg) {

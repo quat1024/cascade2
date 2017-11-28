@@ -3,9 +3,10 @@
 #Aura Nodes
 tile.halogen.node_white.name=White Aura Node
 
-#Moon Stone
-tile.halogen.moon_stone.name=Moon Stone
-tile.halogen.polished_moon_stone.name=Polished Moon Stone
+#Rift Stone
+tile.halogen.rift_stone_normal.name=Riftstone
+tile.halogen.rift_stone_polished.name=Polished Riftstone
+tile.halogen.rift_stone_chiseled.name=Chiseled Riftstone
 
 ############################# Items
 
@@ -15,16 +16,14 @@ item.halogen.rift.name=Rift
 #Aura Crystals
 item.halogen.aura_crystal.0.name=White Aura
 
-#Moon Dust
-item.halogen.moon_dust.name=Moon Dust
+#Rift Dust
+item.halogen.rift_dust.name=Riftdust
 
 ############################# Entities
 
 #Rift
 entity.halogenthrown_rift.name=Thrown Rift
 entity.halogenrift.name=Rift
-
-
 
 ############################# Other shit???
 

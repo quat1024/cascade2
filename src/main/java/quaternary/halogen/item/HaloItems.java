@@ -10,7 +10,7 @@ public class HaloItems {
 	static HaloItem[] items = {
 		new ItemAuraCrystal(AuraTypes.NORMAL),
 		new ItemRift(),
-		new HaloItem("moon_dust")
+		new HaloItem("rift_dust")
 	};
 	
 	public static void registerItems(IForgeRegistry<Item> reg) {
