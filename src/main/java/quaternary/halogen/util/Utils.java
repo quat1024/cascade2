@@ -4,10 +4,10 @@ import com.google.common.base.Preconditions;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 
-public class Utils {	
+public class Utils {
 	//Varargs min function
 	public static int min(int... numbers) {
-		int i=Integer.MAX_VALUE;
+		int i = Integer.MAX_VALUE;
 		for(int j : numbers) {
 			if(j < i) i = j;
 		}
