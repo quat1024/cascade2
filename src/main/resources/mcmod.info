@@ -2,13 +2,13 @@
 {
   "modid": "halogen",
   "name": "Halogen",
-  "description": "A remix of Aura Cascade? Is that a thing I can do?",
+  "description": "A remix of Aura Cascade for modern versions of Minecraft.",
   "version": "${version}",
   "mcversion": "${mcversion}",
-  "url": "",
+  "url": "https://github.com/quat1024/Halogen",
   "updateUrl": "",
   "authorList": ["quaternary"],
-  "credits": "pixlepix for creating Aura Cascade",
+  "credits": "pixlepix for creating Aura Cascade, Vazkii's Botania for being a forever source of inspiration, Myriadtail for being a forever source of entertainment, InsomniaKitten, Nerxit, Fat Boy brand ice cream sandwiches, my cats and dogs, MMD, everyone who yelled at me on Discord, Tama Snowflake Emoji, Vazker, my dad (for putting up with my enthusiastic ranting about this mod despite not really knowing what I'm talking about), people who read the mcmod.info, Bepis, the Helix Fossil, and viewers like you.",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []
