@@ -13,9 +13,8 @@ import net.minecraft.util.math.*;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import quaternary.halogen.aura.cap.*;
-import quaternary.halogen.aura.cap.impl.AuraReceiverCap;
-import quaternary.halogen.aura.cap.impl.AuraStorageCap;
-import quaternary.halogen.aura.cap.impl.emitter.*;
+import quaternary.halogen.aura.cap.impl.*;
+import quaternary.halogen.aura.type.AuraType;
 import quaternary.halogen.aura.type.AuraTypes;
 import quaternary.halogen.item.ItemAuraCrystal;
 import quaternary.halogen.misc.DisgustingNumbers;
@@ -33,7 +32,7 @@ public class TileNode extends TileEntity implements ITickable {
 	
 	private HashMap<EnumFacing, AuraEmitterCap> emitters = new HashMap<>();
 	
-	private int auraAbsorptionCooldown = 0;
+	private int auraAbsorptionCooldownTicks = 0;
 	
 	public TileNode() {
 		storageCap = new AuraStorageCap(DisgustingNumbers.NODE_MAX_AURA);
@@ -41,8 +40,8 @@ public class TileNode extends TileEntity implements ITickable {
 		emitters.clear();
 		for(EnumFacing whichWay : EnumFacing.values()) {
 			if(whichWay == EnumFacing.UP) continue;
-			if(whichWay == EnumFacing.DOWN) emitters.put(whichWay, new AuraDownwardsEmitterCap(storageCap));
-			else emitters.put(whichWay, new AuraSidewaysEmitterCap(storageCap));
+			if(whichWay == EnumFacing.DOWN) emitters.put(whichWay, new AuraEmitterCap(storageCap, true));
+			else emitters.put(whichWay, new AuraEmitterCap(storageCap, false));
 		}
 		
 		receiverCap = new AuraReceiverCap(storageCap);
@@ -50,33 +49,33 @@ public class TileNode extends TileEntity implements ITickable {
 	
 	@Override
 	public void update() {
-		if(auraAbsorptionCooldown > 0) auraAbsorptionCooldown--;
+		if(auraAbsorptionCooldownTicks > 0) auraAbsorptionCooldownTicks--;
 		
-		if(auraAbsorptionCooldown == 0) {
+		if(auraAbsorptionCooldownTicks == 0) {
 			List<EntityItem> nearbyItems = world.getEntitiesWithinAABB(EntityItem.class, DETECTION_AABB.offset(pos));
-			nearbyItems.removeIf(itemEnt -> itemEnt.getItem/*Stack*/().isEmpty());
-			//todo: capa🅱ilities instead of instanceof 
-			nearbyItems.removeIf(itemEnt -> !(itemEnt.getItem/*Stack*/().getItem() instanceof ItemAuraCrystal));
-			if(!nearbyItems.isEmpty()) {
-				for(EntityItem ent : nearbyItems) {
-					ItemStack stack = ent.getItem/*Stack*/();
+			nearbyItems.removeIf(itemEnt -> (itemEnt.getItem/*Stack*/().isEmpty() || 
+			                               !(itemEnt.getItem/*Stack*/().getItem() instanceof ItemAuraCrystal)));
+			for(EntityItem ent : nearbyItems) {
+				ItemStack stack = ent.getItem/*Stack*/();
+				
+				//TODO: capabililties, not instanceof
+				ItemAuraCrystal crystal = (ItemAuraCrystal) stack.getItem();
+				
+				AuraType type = crystal.type;
+				int containedAura = crystal.getContainedAura(stack);
+				
+				if(storageCap.addAura(type, containedAura)) {
+					auraAbsorptionCooldownTicks = 10;
 					
-					//Blah blah blah ask the stack for its contained aura blah blah blah
-					int containedAura = DisgustingNumbers.AURA_CRYSTAL_CONTAINED_AURA;
-					
-					if(storageCap.addAura(AuraTypes.NORMAL, containedAura)) {
-						auraAbsorptionCooldown = 10;
-						
-						if(world.isRemote) {
-							Vec3d particlePos = ent.getPositionVector().addVector(.1, .1, .1);
-							RenderUtils.clientsideParticle(EnumParticleTypes.ITEM_CRACK, particlePos, .3, 10, Item.getIdFromItem(stack.getItem()), stack.getItemDamage());
-						}
-						
-						world.updateComparatorOutputLevel(pos, world.getBlockState(pos).getBlock());
-						
-						stack.shrink(1);
-						break;
+					if(world.isRemote) {
+						RenderUtils.clientsideVanillaParticles(EnumParticleTypes.ITEM_CRACK, ent.getPositionVector(), .3, 10, Item.getIdFromItem(stack.getItem()), stack.getItemDamage());
 					}
+					
+					//update comparator level without causing a block update.
+					world.updateComparatorOutputLevel(pos, world.getBlockState(pos).getBlock());
+					
+					stack.shrink(1);
+					break;
 				}
 			}
 		}
@@ -123,7 +122,6 @@ public class TileNode extends TileEntity implements ITickable {
 					
 					if(otherTE.hasCapability(RECEIVER, whichWay.getOpposite())) {
 						IAuraReceiver otherReceiver = otherTE.getCapability(RECEIVER, whichWay.getOpposite());
-						//I just checked hasCapability, so this BETTER not be null.
 						assert otherReceiver != null;
 						
 						emitter.emitAura(AuraTypes.NORMAL, DisgustingNumbers.NODE_AURA_BURST_SIZE, otherReceiver);
@@ -188,7 +186,7 @@ public class TileNode extends TileEntity implements ITickable {
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
 		nbt.setTag("Aura", storageCap.writeNBT());
-		nbt.setInteger("AbsorptionCooldown", auraAbsorptionCooldown);
+		nbt.setInteger("AbsorptionCooldown", auraAbsorptionCooldownTicks);
 		//todo: write emitters
 		return super.writeToNBT(nbt);
 	}
@@ -196,7 +194,7 @@ public class TileNode extends TileEntity implements ITickable {
 	@Override
 	public void readFromNBT(NBTTagCompound nbt) {
 		storageCap.readNBT(nbt.getTagList("Aura", 10));
-		auraAbsorptionCooldown = nbt.getInteger("AbsorptionCooldown");
+		auraAbsorptionCooldownTicks = nbt.getInteger("AbsorptionCooldown");
 		//todo: read emitters
 		super.readFromNBT(nbt);
 	}

@@ -14,7 +14,7 @@ tile.halogen.rift_stone_chiseled.name=Chiseled Riftstone
 item.halogen.rift.name=Rift
 
 #Aura Crystals
-item.halogen.aura_crystal.0.name=White Aura
+item.halogen.aura_crystal_normal.name=White Aura
 
 #Rift Dust
 item.halogen.rift_dust.name=Riftdust

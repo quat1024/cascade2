@@ -1,19 +1,23 @@
-package quaternary.halogen.aura.cap.impl.emitter;
+package quaternary.halogen.aura.cap.impl;
 
 import net.minecraft.nbt.NBTBase;
+import net.minecraft.util.math.MathHelper;
 import quaternary.halogen.aura.cap.*;
 import quaternary.halogen.aura.type.AuraType;
 import quaternary.halogen.util.Utils;
 
 import javax.annotation.Nonnull;
 
-public abstract class AuraEmitterCap implements IAuraEmitter {
-	
+public class AuraEmitterCap implements IAuraEmitter {
 	private boolean canEmit;
 	IAuraStorage storage;
 	
-	public AuraEmitterCap(IAuraStorage storage) {
-		this.storage = storage;
+	boolean fireAll;
+	
+	public AuraEmitterCap(IAuraStorage storage, boolean fireAll) {
+		this.storage = storage;		
+		this.fireAll = fireAll;
+		
 		canEmit = true;
 	}
 	
@@ -60,8 +64,22 @@ public abstract class AuraEmitterCap implements IAuraEmitter {
 				return false;
 			}
 			*/
-			int toEmit = getEmittedAura(receiver.getStorage(), amt);
+			int toEmit;
 			
+			if(fireAll) {
+				//Try to emit all my aura.
+				toEmit = amt;
+			} else {
+				//If I hold more aura than the node I'm sending to (plus one point)
+				int auraDifference = storage.getTotalAura() - receiver.getStorage().getTotalAura();
+				if(auraDifference > 1) {
+					//Try to balance aura between myself and the other node.
+					int auraAvg = MathHelper.ceil((storage.getTotalAura() + receiver.getStorage().getTotalAura()) / 2f);
+					toEmit = storage.getTotalAura() - auraAvg;
+				} else return false; //Don't send anything at all.
+			}
+			
+			//Make sure I'm sending an actually reasonable amount of aura...
 			toEmit = Utils.min(toEmit, amt, storage.getTotalAura(), receiver.getStorage().getRemainingSpace());
 			
 			if(toEmit != 0) {
@@ -75,8 +93,6 @@ public abstract class AuraEmitterCap implements IAuraEmitter {
 		
 		return false;
 	}
-	
-	abstract int getEmittedAura(IAuraStorage other, int amt);
 	
 	@Override
 	public NBTBase writeNBT() {

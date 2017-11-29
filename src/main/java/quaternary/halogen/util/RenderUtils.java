@@ -12,14 +12,15 @@ public class RenderUtils {
 	 * Helper function to spawn some particles clientside, without dealing with packets or other junk
 	 */
 	@SideOnly(Side.CLIENT)
-	public static void clientsideParticle(EnumParticleTypes type, Vec3d pos, double speed, int count, int... params) {
+	public static void clientsideVanillaParticles(EnumParticleTypes type, Vec3d pos, double speed, int count, int... params) {
+		//Offset the position a bit to *roughly* account for the XYZ position
+		//passed in being the left side of the particle, not the center
+		Vec3d offsetPos = pos.addVector(0.1, 0.1, 0.1);
+		
 		//Isn't it funny that you have to convert this type into a particle ID, where spawnEffectParticle
 		//immediately converts it right back to an enumparticletypes?
 		//Isn't that fabulous.
-		//TODO fix this lol
 		int id = type.getParticleID();
-		
-		//Anyways.
 		
 		for(int i = 0; i < count; i++) {
 			//https://math.stackexchange.com/questions/44689/how-to-find-a-random-axis-or-unit-vector-in-3d
@@ -33,8 +34,7 @@ public class RenderUtils {
 			double y = coeff * Math.sin(theta) * randSpeed;
 			z *= randSpeed;
 			
-			Minecraft.getMinecraft().effectRenderer.spawnEffectParticle(id, pos.x, pos.y, pos.z, x, y, z, params);
-			//w.spawnParticle(type, pos.x, pos.y, pos.z, x, y, z, params);
+			Minecraft.getMinecraft().effectRenderer.spawnEffectParticle(id, offsetPos.x, offsetPos.y, offsetPos.z, x, y, z, params);
 		}
 	}
 }
