@@ -17,12 +17,11 @@ public class ItemRift extends HaloItem {
 		
 		if(!player.capabilities.isCreativeMode) stack.shrink(1);
 		
-		//THINKING
 		if(!world.isRemote) {
 			EntityThrownRift e = new EntityThrownRift(world, player);
 			//             that constructor ^ takes care of setting the position from the player
-			//             not the orientation though so let's fix that
-			e.setHeadingFromThrower(player, player.rotationPitch, player.rotationYaw, 0f, 0.7f, 1f);
+			//             not the orientation though, so let's fix that
+			e.shoot(player, player.rotationPitch, player.rotationYaw, 0f, 0.7f, 1f);
 			world.spawnEntity(e);
 		}
 		
