@@ -5,7 +5,7 @@ Formerly Cascade2.
 
 ### What is this thing anyways?
 
-~~Literally an aura cascade rip off~~Reimagining of Aura Cascade for Minecraft 1.12.
+~~Literally an aura cascade rip off~~Reimagining of Aura Cascade for Minecraft ~~1.12~~1.13
 
 Note: Anybody complaining that Halogen does not include numbers will be have their suggestions summarily ignored and sternly asked to play another mod.
 
