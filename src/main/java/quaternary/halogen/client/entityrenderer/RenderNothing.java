@@ -20,6 +20,7 @@ public class RenderNothing<T extends Entity> extends Render<T> {
 	}
 	
 	@Nullable
+	@Override
 	protected ResourceLocation getEntityTexture(T entity) {
 		return null;
 	}

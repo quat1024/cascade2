@@ -70,7 +70,7 @@ public class TileNode extends TileEntity implements ITickable {
 	//THINGS TO PUT IN ANOTHER CLASS EVENTUALLY LOLOL
 	//REMEMBER HOW WELL THAT WORKED LAST TIME
 	private boolean canConnectionPass(IBlockState state) {
-		return (state.getMaterial().isReplaceable() || state.getMaterial().isLiquid()) || !state.isFullBlock() && !state.isFullCube();
+		return (state.getMaterial().isReplaceable() || state.getMaterial().isLiquid()) || (!state.isFullBlock() && !state.isFullCube());
 	}
 	
 	/*

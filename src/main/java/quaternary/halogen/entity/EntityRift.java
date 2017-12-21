@@ -64,7 +64,7 @@ public class EntityRift extends Entity {
 					inputStack.shrink(1);
 					
 					cooldown = 5;
-					r -= 0.1;
+					r -= 0.1f;
 					
 					break;
 				}

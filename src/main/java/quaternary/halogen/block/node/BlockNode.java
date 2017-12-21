@@ -51,7 +51,8 @@ public class BlockNode extends HaloBlock implements ITileEntityProvider {
 	
 	@Override
 	public int getComparatorInputOverride(IBlockState state, World world, BlockPos pos) {
-		return ((TileNode) world.getTileEntity(pos)).getComparatorLevel();
+		//return ((TileNode) world.getTileEntity(pos)).getComparatorLevel();
+		return 5;
 	}
 	
 	@Override

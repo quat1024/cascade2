@@ -14,6 +14,7 @@ public class HaloCreativeTab extends CreativeTabs {
 	@GameRegistry.ObjectHolder("halogen:aura_crystal_normal")
 	public static final Item auraCrystalItem = null;
 	
+	@Override
 	public ItemStack getTabIconItem() {
 		return new ItemStack(auraCrystalItem, 1, 0);
 	}

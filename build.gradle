@@ -7,11 +7,12 @@ buildscript {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
     }
 }
+
+plugins {
+    id "net.ltgt.errorprone" version "0.0.13"
+}
+
 apply plugin: 'net.minecraftforge.gradle.forge'
-
-//oh yeah, what are you gonna do if I edit above the line???!?
-
-//Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
 version = "1.0"
 group = "quaternary.halogen" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
