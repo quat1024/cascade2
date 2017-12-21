@@ -23,7 +23,8 @@ import quaternary.halogen.recipe.HaloRiftRecipes;
 public class Halogen {
 	public static final String MODID = "halogen";
 	public static final String NAME = "Halogen";
-	public static final String VERSION = "0";
+	//this is replaced with Gradle magic
+	public static final String VERSION = "gradle:modVersion";
 	
 	@Mod.Instance
 	public static Halogen INSTANCE = new Halogen();

@@ -1,6 +1,7 @@
 package quaternary.halogen.block.node;
 
 import net.minecraft.block.ITileEntityProvider;
+import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
@@ -16,7 +17,7 @@ public class BlockNode extends HaloBlock implements ITileEntityProvider {
 	static final AxisAlignedBB AABB = new AxisAlignedBB(1 / 4d, 1 / 4d, 1 / 4d, 3 / 4d, 3 / 4d, 3 / 4d);
 	
 	public BlockNode(String jeff) {
-		super(jeff, Material.ROCK);
+		super(jeff, Material.ROCK, MapColor.SNOW);
 		setNonFullBlock();
 	}
 	

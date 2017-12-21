@@ -1,6 +1,7 @@
 package quaternary.halogen.block;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
@@ -23,8 +24,8 @@ public class HaloBlock extends Block {
 	
 	boolean passable;
 	
-	public HaloBlock(String jeff, Material mat) {
-		super(mat);
+	public HaloBlock(String jeff, Material mat, MapColor color) {
+		super(mat, color);
 		
 		name = jeff; //My name jeff
 		
