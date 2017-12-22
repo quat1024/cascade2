@@ -10,6 +10,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import quaternary.halogen.aura.cap.*;
@@ -20,6 +21,7 @@ import quaternary.halogen.misc.DisgustingNumbers;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.EnumMap;
 import java.util.List;
 
 public class TileNode extends TileEntity implements ITickable {
@@ -64,7 +66,40 @@ public class TileNode extends TileEntity implements ITickable {
 		
 		if(world.isRemote || world.getTotalWorldTime() % 15 != 0) return;
 		
+		//build a map of nearby aura nodes
+		//Key: the direction the other node is in, compared to this one.
+		//Value: the IAuraReceiver of that node (retrieved from the direction to it)
+		//TODO cache this map
+		EnumMap<EnumFacing, IAuraReceiver> nearbyReceivers = new EnumMap<>(EnumFacing.class);
+		
+		for(EnumFacing whichWay : EnumFacing.values()) {
+			for(int dist = 1; dist < 16; dist++) {
+				BlockPos posToCheck = pos.offset(whichWay, dist);
+				
+				//try a different direction if this position is not loaded.
+				if(!world.isBlockLoaded(posToCheck)) break;
+				
+				//can this block hold aura?
+				TileEntity tile = world.getTileEntity(posToCheck);
+				if(tile != null && tile.hasCapability(RECEIVER, whichWay.getOpposite())) {
+					IAuraReceiver otherRec = tile.getCapability(RECEIVER, whichWay.getOpposite());
+					nearbyReceivers.put(whichWay, otherRec);
+					break; //Check a different direction.
+				}
+				
+				//try a different direction if this way is blocked.
+				//(i check this after checking whether it's an aura block so i am able
+				//to send aura to types of blocks that would otherwise block this ray)
+				IBlockState state = world.getBlockState(posToCheck);
+				if(!canConnectionPass(state)) break;
+			}
+		}
+		
 		//todo EMOT AURE
+		emitterCap.emitAuraTick(DisgustingNumbers.NODE_AURA_BURST_SIZE, nearbyReceivers.clone());
+		//nearbyReceivers.clone() is perfect to use here. I get a copy of the map's *structure*,
+		//but all the elements inside the map are references to the real-world IAuraReceivers.
+		//I can just emit aura to the IAuraReceivers inside the map and it will happen in-world.
 	}
 	
 	//THINGS TO PUT IN ANOTHER CLASS EVENTUALLY LOLOL
@@ -95,7 +130,7 @@ public class TileNode extends TileEntity implements ITickable {
 	@Override
 	public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing) {
 		if(capability == STORAGE || capability == RECEIVER) return true;
-		if(capability == EMITTER) return facing != EnumFacing.UP;
+		if(capability == EMITTER) return facing != null && facing != EnumFacing.UP;
 		
 		return super.hasCapability(capability, facing);
 	}
@@ -107,6 +142,7 @@ public class TileNode extends TileEntity implements ITickable {
 		if(capability == STORAGE) return (T) storageCap;
 		if(capability == RECEIVER) return (T) receiverCap;
 		if(capability == EMITTER && facing != EnumFacing.UP) return (T) emitterCap;
+		if(facing == null) return (T) storageCap;
 		
 		return super.getCapability(capability, facing);
 	}
@@ -114,17 +150,20 @@ public class TileNode extends TileEntity implements ITickable {
 	//NBT
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
-		nbt.setTag("Storage", storageCap.writeNBT());
+		nbt.setTag("Emitter", emitterCap.writeNBT());
+		nbt.setTag("Aura", storageCap.writeNBT());
+		nbt.setTag("Receiver", receiverCap.writeNBT());
+		
 		nbt.setInteger("AbsorptionCooldown", auraAbsorptionCooldownTicks);
-		//todo: write emitter
 		return super.writeToNBT(nbt);
 	}
 	
 	@Override
 	public void readFromNBT(NBTTagCompound nbt) {
+		emitterCap.readNBT(nbt.getCompoundTag("Emitter"));
 		storageCap.readNBT(nbt.getTagList("Storage", 10));
+		
 		auraAbsorptionCooldownTicks = nbt.getInteger("AbsorptionCooldown");
-		//todo: read emitter
 		super.readFromNBT(nbt);
 	}
 }
