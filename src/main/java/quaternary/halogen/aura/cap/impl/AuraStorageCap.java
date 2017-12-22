@@ -80,7 +80,7 @@ public class AuraStorageCap implements IAuraStorage {
 		}
 		
 		NBTTagCompound nbt = new NBTTagCompound();
-		nbt.setTag(AURA_LIST_KEY, nbt);
+		nbt.setTag(AURA_LIST_KEY, list);
 		return nbt;
 	}
 	

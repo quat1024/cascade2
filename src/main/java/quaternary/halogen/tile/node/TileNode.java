@@ -151,7 +151,7 @@ public class TileNode extends TileEntity implements ITickable {
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
 		nbt.setTag("Emitter", emitterCap.writeNBT());
-		nbt.setTag("Aura", storageCap.writeNBT());
+		nbt.setTag("Storage", storageCap.writeNBT());
 		nbt.setTag("Receiver", receiverCap.writeNBT());
 		
 		nbt.setInteger("AbsorptionCooldown", auraAbsorptionCooldownTicks);
@@ -160,8 +160,9 @@ public class TileNode extends TileEntity implements ITickable {
 	
 	@Override
 	public void readFromNBT(NBTTagCompound nbt) {
-		emitterCap.readNBT(nbt.getCompoundTag("Emitter"));
-		storageCap.readNBT(nbt.getTagList("Storage", 10));
+		/*emitterCap.readNBT(nbt.getCompoundTag("Emitter"));
+		storageCap.readNBT(nbt.getCompoundTag("Storage"));
+		receiverCap.readNBT(nbt.getCompoundTag("Receiver"));*/
 		
 		auraAbsorptionCooldownTicks = nbt.getInteger("AbsorptionCooldown");
 		super.readFromNBT(nbt);
