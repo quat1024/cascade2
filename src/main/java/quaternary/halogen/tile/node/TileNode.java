@@ -18,6 +18,7 @@ import quaternary.halogen.aura.cap.impl.*;
 import quaternary.halogen.aura.type.AuraType;
 import quaternary.halogen.item.ItemAuraCrystal;
 import quaternary.halogen.misc.DisgustingNumbers;
+import quaternary.halogen.util.RenderUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -60,7 +61,20 @@ public class TileNode extends TileEntity implements ITickable {
 				AuraType type = crystal.type;
 				int containedAura = crystal.getContainedAura(stack);
 				
-				//todo adding aura
+				//Todo: It would be nice to use a real particle packet.
+				//Again this only works because I'm relying on this being ran client and server.
+				//Which is a horrible hack, but also causes a "race condition" where the server
+				//thread eats the item stack before the client can get here and spawn particles.
+				if(world.isRemote) {
+					RenderUtils.clientsideItemCrackParticles(ent, .3, 10);
+				}
+				
+				receiverCap.receiveAura(type, containedAura);
+				stack.shrink(1);
+				
+				auraAbsorptionCooldownTicks = 10;
+				
+				break; //only process one item entity at a time
 			}
 		}
 		
@@ -69,7 +83,7 @@ public class TileNode extends TileEntity implements ITickable {
 		//build a map of nearby aura nodes
 		//Key: the direction the other node is in, compared to this one.
 		//Value: the IAuraReceiver of that node (retrieved from the direction to it)
-		//TODO cache this map
+		//TODO cache this map maybe?
 		EnumMap<EnumFacing, IAuraReceiver> nearbyReceivers = new EnumMap<>(EnumFacing.class);
 		
 		for(EnumFacing whichWay : EnumFacing.values()) {
