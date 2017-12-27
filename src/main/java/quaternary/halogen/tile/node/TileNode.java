@@ -63,8 +63,6 @@ public class TileNode extends TileEntity implements ITickable {
 				
 				//Todo: It would be nice to use a real particle packet.
 				//Again this only works because I'm relying on this being ran client and server.
-				//Which is a horrible hack, but also causes a "race condition" where the server
-				//thread eats the item stack before the client can get here and spawn particles.
 				if(world.isRemote) {
 					RenderUtils.clientsideItemCrackParticles(ent, .3, 10);
 				}

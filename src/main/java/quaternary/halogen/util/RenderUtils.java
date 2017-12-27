@@ -20,9 +20,6 @@ public class RenderUtils {
 		//passed in being the left side of the particle, not the center
 		Vec3d offsetPos = pos.addVector(0.1, 0.1, 0.1);
 		
-		//Isn't it funny that you have to convert this type into a particle ID, where spawnEffectParticle
-		//immediately converts it right back to an enumparticletypes?
-		//Isn't that fabulous.
 		int id = type.getParticleID();
 		
 		for(int i = 0; i < count; i++) {
