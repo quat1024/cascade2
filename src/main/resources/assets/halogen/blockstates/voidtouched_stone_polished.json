@@ -3,7 +3,7 @@
 	"defaults": {
 		"model": "cube_all",
 		"textures": {
-			"all": "halogen:block/rift_stone_chiseled"
+			"all": "halogen:block/voidtouched_stone_polished"
 		}
 	},
 	"variants": {

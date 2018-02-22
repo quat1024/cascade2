@@ -65,6 +65,7 @@ public class BlockBase extends Block {
 	}
 	
 	//Tile entity stuff
+	
 	public boolean hasTileEntity() {
 		return false;
 	}
@@ -75,6 +76,7 @@ public class BlockBase extends Block {
 	}
 	
 	//Useful overrides, I guess
+	
 	@Override
 	public BlockFaceShape getBlockFaceShape(IBlockAccess world, IBlockState state, BlockPos pos, EnumFacing facing) {
 		return fullBlock ? BlockFaceShape.SOLID : BlockFaceShape.UNDEFINED;

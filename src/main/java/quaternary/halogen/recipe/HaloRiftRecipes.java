@@ -11,12 +11,13 @@ import java.util.Optional;
 
 @GameRegistry.ObjectHolder("halogen")
 public class HaloRiftRecipes {
+	//todo JAYSONNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN
 	private static ArrayList<RiftRecipe> recipes = new ArrayList<>();
 	
-	@GameRegistry.ObjectHolder("rift_dust")
+	@GameRegistry.ObjectHolder("voidtouched_dust")
 	public static final Item MOON_DUST = null;
 	
-	@GameRegistry.ObjectHolder("rift_stone_normal")
+	@GameRegistry.ObjectHolder("voidtouched_stone_normal")
 	public static final Item MOON_STONE = null;
 	
 	//called in init

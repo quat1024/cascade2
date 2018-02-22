@@ -95,6 +95,7 @@ public class Halogen {
 		@SuppressWarnings("unused")
 		public static void itemModels(ModelRegistryEvent e) {
 			for(Item i : Stuff.ITEMS) {
+				//What is data value :S
 				ModelResourceLocation mrl = new ModelResourceLocation(i.getRegistryName(), "inventory");
 				ModelLoader.setCustomModelResourceLocation(i, 0, mrl);
 			}

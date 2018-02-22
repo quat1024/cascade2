@@ -8,7 +8,7 @@ import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import quaternary.halogen.aura.type.AuraTypes;
 import quaternary.halogen.block.BlockBase;
 import quaternary.halogen.block.node.BlockNode;
-import quaternary.halogen.block.plain.BlockRiftStone;
+import quaternary.halogen.block.plain.BlockVoidStone;
 import quaternary.halogen.entity.EntityRift;
 import quaternary.halogen.item.HaloItem;
 import quaternary.halogen.item.ItemAuraCrystal;
@@ -24,9 +24,9 @@ public class Stuff {
 	static {
 		//Blocks!
 		BLOCKS.add(new BlockNode("node_white"));
-		BLOCKS.add(new BlockRiftStone("normal"));
-		BLOCKS.add(new BlockRiftStone("polished"));
-		BLOCKS.add(new BlockRiftStone("chiseled"));
+		BLOCKS.add(new BlockVoidStone("normal"));
+		BLOCKS.add(new BlockVoidStone("polished"));
+		BLOCKS.add(new BlockVoidStone("chiseled"));
 		
 		//Items!
 		for(Block b : BLOCKS) {
@@ -38,7 +38,7 @@ public class Stuff {
 		}
 		
 		ITEMS.add(new ItemAuraCrystal(AuraTypes.NORMAL));
-		ITEMS.add(new HaloItem("rift_dust"));
+		ITEMS.add(new HaloItem("voidtouched_dust"));
 		
 		//Entities!
 		ENTITIES.add(ent(EntityRift.class, "rift", 96, 5, false));
@@ -46,6 +46,6 @@ public class Stuff {
 	
 	private static int i = 0;
 	private static EntityEntry ent(Class c, String id, int range, int freq, boolean velocity) {
-		return EntityEntryBuilder.create().entity(c).id(new ResourceLocation(Halogen.MODID, id), i++).name(Halogen.MODID + id).tracker(range, freq, velocity).build(); 
+		return EntityEntryBuilder.create().entity(c).id(new ResourceLocation(Halogen.MODID, id), i++).name(Halogen.MODID + "." + id).tracker(range, freq, velocity).build(); 
 	}
 }

@@ -9,7 +9,7 @@ public class HaloItem extends Item {
 	public HaloItem(String jeff) {
 		name = jeff;
 		
-		setRegistryName(name);
+		setRegistryName(Halogen.MODID, name);
 		setUnlocalizedName(Halogen.MODID + "." + name);
 		setCreativeTab(Halogen.CREATIVE_TAB);
 	}

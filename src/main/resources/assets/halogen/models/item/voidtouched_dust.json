@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "halogen:item/rift_dust"
+    "layer0": "halogen:item/voidtouched_dust"
   }
 }
