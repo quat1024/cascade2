@@ -10,10 +10,10 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import quaternary.halogen.block.HaloBlock;
+import quaternary.halogen.block.BlockBase;
 import quaternary.halogen.tile.node.TileNode;
 
-public class BlockNode extends HaloBlock implements ITileEntityProvider {
+public class BlockNode extends BlockBase implements ITileEntityProvider {
 	static final AxisAlignedBB AABB = new AxisAlignedBB(1 / 4d, 1 / 4d, 1 / 4d, 3 / 4d, 3 / 4d, 3 / 4d);
 	
 	public BlockNode(String jeff) {
@@ -22,6 +22,11 @@ public class BlockNode extends HaloBlock implements ITileEntityProvider {
 	}
 	
 	//tile entity setup
+	@Override
+	public boolean hasTileEntity() {
+		return true;
+	}
+	
 	@Override
 	public Class getTileEntityClass() {
 		return TileNode.class;

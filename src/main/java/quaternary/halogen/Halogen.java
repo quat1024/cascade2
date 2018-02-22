@@ -1,20 +1,23 @@
 package quaternary.halogen;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.registry.EntityEntry;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import quaternary.halogen.block.HaloBlocks;
+import quaternary.halogen.block.BlockBase;
 import quaternary.halogen.cap.HaloCaps;
-import quaternary.halogen.entity.HaloEntities;
-import quaternary.halogen.item.HaloItems;
 import quaternary.halogen.misc.HaloCreativeTab;
 import quaternary.halogen.proxy.CommonProxy;
 import quaternary.halogen.recipe.HaloRiftRecipes;
@@ -40,7 +43,6 @@ public class Halogen {
 	@SuppressWarnings("unused")
 	public void preinit(FMLPreInitializationEvent e) {
 		HaloCaps.registerCaps();
-		HaloEntities.registerEntities();
 		
 		PROXY.registerEntityRenderers();
 		//PROXY.registerTESRs();
@@ -52,26 +54,50 @@ public class Halogen {
 		HaloRiftRecipes.registerRecipes();
 	}
 	
-	@Mod.EventBusSubscriber
+	@Mod.EventBusSubscriber(modid = Halogen.MODID)
 	public static class RegistrationEvents {
 		@SubscribeEvent
 		@SuppressWarnings("unused")
 		public static void blocks(RegistryEvent.Register<Block> e) {
-			HaloBlocks.registerBlocks(e.getRegistry());
+			for(Block b : Stuff.BLOCKS) {
+				e.getRegistry().register(b);
+				
+				if(b instanceof BlockBase) {
+					BlockBase bb = (BlockBase) b;
+					
+					if(bb.hasTileEntity()) {
+						GameRegistry.registerTileEntity(bb.getTileEntityClass(), bb.getRegistryName().toString());
+					}
+				}
+			}
 		}
 		
 		@SubscribeEvent
 		@SuppressWarnings("unused")
 		public static void items(RegistryEvent.Register<Item> e) {
-			HaloBlocks.registerItemBlocks(e.getRegistry());
-			HaloItems.registerItems(e.getRegistry());
+			for(Item i : Stuff.ITEMS) {
+				e.getRegistry().register(i);
+			}
 		}
 		
 		@SubscribeEvent
 		@SuppressWarnings("unused")
+		public static void entities(RegistryEvent.Register<EntityEntry> e) {
+			for(EntityEntry ent : Stuff.ENTITIES) {
+				e.getRegistry().register(ent);
+			}
+		}
+	}
+	
+	@Mod.EventBusSubscriber(modid = Halogen.MODID, value = Side.CLIENT)
+	public static class ClientEvents {
+		@SubscribeEvent
+		@SuppressWarnings("unused")
 		public static void itemModels(ModelRegistryEvent e) {
-			HaloBlocks.registerItemBlockModels();
-			HaloItems.registerItemModels();
+			for(Item i : Stuff.ITEMS) {
+				ModelResourceLocation mrl = new ModelResourceLocation(i.getRegistryName(), "inventory");
+				ModelLoader.setCustomModelResourceLocation(i, 0, mrl);
+			}
 		}
 	}
 }

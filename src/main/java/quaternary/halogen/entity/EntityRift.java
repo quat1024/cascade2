@@ -3,14 +3,11 @@ package quaternary.halogen.entity;
 import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.*;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import quaternary.halogen.recipe.HaloRiftRecipes;
 
 import java.util.Optional;
@@ -95,21 +92,15 @@ public class EntityRift extends Entity {
 	}
 	
 	@Override
-	protected void readEntityFromNBT(NBTTagCompound compound) {
-		
+	protected void readEntityFromNBT(NBTTagCompound nbt) {
+		dataManager.set(RADIUS, nbt.getFloat("RiftSize"));
+		dataManager.set(COOLDOWN, nbt.getInteger("RiftCooldown"));
 	}
 	
 	@Override
-	protected void writeEntityToNBT(NBTTagCompound compound) {
-		
-	}
-	
-	@GameRegistry.ObjectHolder("halogen:rift")
-	public static final Item rift = null;
-	
-	@Override
-	public ItemStack getPickedResult(RayTraceResult target) {
-		return new ItemStack(rift);
+	protected void writeEntityToNBT(NBTTagCompound nbt) {
+		nbt.setFloat("RiftSize", dataManager.get(RADIUS));
+		nbt.setInteger("RiftCooldown", dataManager.get(COOLDOWN));
 	}
 	
 	@Override

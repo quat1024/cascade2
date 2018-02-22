@@ -18,42 +18,44 @@ import javax.annotation.Nullable;
  * base class for halogen blocks.
  * Also simplifies some fullCube logic, etc (less dependent on the block material)
  */
-public class HaloBlock extends Block {
+public class BlockBase extends Block {
 	protected ItemBlock itemForm;
 	public String name;
 	
 	boolean passable;
 	
-	public HaloBlock(String jeff, Material mat, MapColor color) {
+	public BlockBase(String jeff, Material mat, MapColor color) {
 		super(mat, color);
 		
 		name = jeff; //My name jeff
 		
 		fullBlock = true;
 		
-		setRegistryName(name);
+		setRegistryName(Halogen.MODID, name);
 		setUnlocalizedName(Halogen.MODID + "." + name);
 		setCreativeTab(Halogen.CREATIVE_TAB);
 	}
 	
-	//I know it's not usually a good pattern to make methods like "setNotThis" "setNotThat"
-	//But since the "archetypal" block is a full block, I think it makes sense here.
-	/** Mark this block as a non-full cube. */
-	public HaloBlock setNonFullBlock() {
+	//Flags?
+	
+	public BlockBase setNonFullBlock() {
 		fullBlock = false;
 		translucent = true;
 		setLightOpacity(0);
 		return this;
 	}
 	
-	/** Mark this block as one that can be pathfound through, etc */
-	public HaloBlock setPassable() {
+	public BlockBase setPassable() {
 		passable = false;
 		return this;
 	}
 	
-	/** Return an Item that is associated with this HaloBlock.
-	 * The default implementation creates an ItemBlock - override if something fancier is needed.*/
+	//Items
+	
+	public boolean hasItemForm() {
+		return true;
+	}
+	
 	public Item getItemForm() {
 		if(itemForm == null) {
 			itemForm = new ItemBlock(this);
@@ -62,13 +64,22 @@ public class HaloBlock extends Block {
 		return itemForm;
 	}
 	
-	//A more sane default value ;)	
+	//Tile entity stuff
+	public boolean hasTileEntity() {
+		return false;
+	}
+	
+	@Nullable
+	public Class getTileEntityClass() {
+		return null;
+	}
+	
+	//Useful overrides, I guess
 	@Override
 	public BlockFaceShape getBlockFaceShape(IBlockAccess world, IBlockState state, BlockPos pos, EnumFacing facing) {
 		return fullBlock ? BlockFaceShape.SOLID : BlockFaceShape.UNDEFINED;
 	}
 	
-	//Overrides to make some things less dependent on like... block materials
 	@Override
 	public boolean isFullCube(IBlockState state) {
 		return fullBlock;
@@ -87,11 +98,5 @@ public class HaloBlock extends Block {
 	@Override
 	public boolean isPassable(IBlockAccess blah, BlockPos blahblah) {
 		return passable;
-	}
-	
-	/** Override if using a tile entity. Called from HaloBlocks to register the tile entity. */
-	@Nullable
-	public Class getTileEntityClass() {
-		return null;
 	}
 }

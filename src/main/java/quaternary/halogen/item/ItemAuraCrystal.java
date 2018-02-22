@@ -7,10 +7,10 @@ import quaternary.halogen.misc.DisgustingNumbers;
 public class ItemAuraCrystal extends HaloItem {
 	public final AuraType type;
 	
-	public ItemAuraCrystal(AuraType type_) {
-		super("aura_crystal_" + type_.getName());
+	public ItemAuraCrystal(AuraType type) {
+		super("aura_crystal_" + type.getName());
 		
-		type = type_;
+		this.type = type;
 	}
 	
 	public int getContainedAura(ItemStack stack) {
