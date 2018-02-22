@@ -11,7 +11,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import quaternary.halogen.block.BlockBase;
-import quaternary.halogen.tile.node.TileNode;
+import quaternary.halogen.block.tile.node.TileNode;
 
 public class BlockNode extends BlockBase implements ITileEntityProvider {
 	static final AxisAlignedBB AABB = new AxisAlignedBB(1 / 4d, 1 / 4d, 1 / 4d, 3 / 4d, 3 / 4d, 3 / 4d);

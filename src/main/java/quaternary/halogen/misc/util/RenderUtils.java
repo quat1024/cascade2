@@ -1,4 +1,4 @@
-package quaternary.halogen.util;
+package quaternary.halogen.misc.util;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.item.EntityItem;

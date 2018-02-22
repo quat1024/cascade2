@@ -1,4 +1,4 @@
-package quaternary.halogen.util;
+package quaternary.halogen.misc.util;
 
 import com.google.common.base.Preconditions;
 import net.minecraft.init.Items;

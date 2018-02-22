@@ -4,7 +4,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.oredict.OreDictionary;
-import quaternary.halogen.util.Utils;
+import quaternary.halogen.misc.util.Utils;
 
 import java.util.Optional;
 

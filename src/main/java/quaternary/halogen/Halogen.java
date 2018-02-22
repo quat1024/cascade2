@@ -45,7 +45,6 @@ public class Halogen {
 		HaloCaps.registerCaps();
 		
 		PROXY.registerEntityRenderers();
-		//PROXY.registerTESRs();
 	}
 	
 	@Mod.EventHandler

@@ -1,4 +1,4 @@
-package quaternary.halogen.tile.node;
+package quaternary.halogen.block.tile.node;
 // Comment with space after the slashes to appease Nerxit.
 //Hey nerxiepoo shut up about my comment habits k
 
@@ -18,7 +18,7 @@ import quaternary.halogen.aura.cap.impl.*;
 import quaternary.halogen.aura.type.AuraType;
 import quaternary.halogen.item.ItemAuraCrystal;
 import quaternary.halogen.misc.DisgustingNumbers;
-import quaternary.halogen.util.RenderUtils;
+import quaternary.halogen.misc.util.RenderUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
